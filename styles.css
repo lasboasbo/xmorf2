@@ -463,24 +463,40 @@ body {
 }
 
 .stat-card {
-  background: rgba(18, 21, 29, 0.9);
+  background: rgba(18, 21, 29, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
   padding: 20px;
   display: flex;
   align-items: center;
   gap: 16px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 30, 60, 0.35);
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 30, 60, 0.2);
 }
 
 .stat-icon {
-  width: 48px;
-  height: 48px;
-  background: rgba(255, 30, 60, 0.1);
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 30, 60, 0.12);
+  border: 1px solid rgba(255, 30, 60, 0.25);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--primary-red);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stat-card:hover .stat-icon {
+  transform: scale(1.12) rotate(4deg);
 }
 
 .stat-value {
@@ -494,11 +510,19 @@ body {
 }
 
 .admin-table-card {
-  background: rgba(18, 21, 29, 0.9);
-  border: 1px solid rgba(255, 30, 60, 0.15);
+  background: rgba(18, 21, 29, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 30, 60, 0.2);
   border-radius: var(--radius-lg);
   padding: 24px;
   margin-bottom: 32px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5), var(--shadow-glow);
+  transition: border-color 0.3s ease;
+}
+
+.admin-table-card:hover {
+  border-color: rgba(255, 30, 60, 0.38);
 }
 
 .admin-table-title {
@@ -507,7 +531,7 @@ body {
   margin-bottom: 16px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .admin-table {
@@ -529,6 +553,14 @@ body {
   padding: 14px 16px;
   font-size: 0.9rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.admin-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.admin-table tbody tr:hover {
+  background: rgba(255, 30, 60, 0.07);
 }
 
 .status-badge {
