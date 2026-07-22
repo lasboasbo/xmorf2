@@ -1365,12 +1365,39 @@ body {
   }
 
   .top-navbar {
-    padding: 0 12px;
+    padding: 0 8px;
+    gap: 4px;
   }
 
   .nav-search {
-    margin: 0 10px;
-    max-width: 180px;
+    margin: 0 6px;
+    flex: 1;
+    max-width: 140px;
+  }
+
+  .nav-actions {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .lang-selector {
+    padding: 2px;
+    flex-shrink: 0;
+  }
+
+  .lang-btn {
+    padding: 3px 6px;
+    font-size: 0.72rem;
+  }
+
+  .user-profile {
+    padding: 2px 6px;
+  }
+
+  .user-avatar {
+    width: 26px;
+    height: 26px;
+    font-size: 0.72rem;
   }
 
   .user-name {
@@ -1436,5 +1463,22 @@ body {
     padding: 20px;
   }
 }
+
+@media (max-width: 480px) {
+  .nav-title {
+    display: none;
+  }
+  .nav-search {
+    max-width: 105px;
+  }
+  .lang-selector {
+    border-radius: 12px;
+  }
+  .lang-btn {
+    padding: 2px 4px;
+    font-size: 0.66rem;
+  }
+}
+
 
 
