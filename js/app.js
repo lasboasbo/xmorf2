@@ -97,6 +97,48 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnQuickRegister) btnQuickRegister.addEventListener('click', () => showAuthCard('register'));
   if (btnBackToLanding) btnBackToLanding.addEventListener('click', showLandingInfo);
 
+  // Protected Video Player & Auto-Unmute Audio Handler
+  const landingVideo = document.getElementById('landingVideo');
+  const btnToggleSound = document.getElementById('btnToggleSound');
+  const soundIconMuted = document.getElementById('soundIconMuted');
+  const soundIconUnmuted = document.getElementById('soundIconUnmuted');
+  const soundBtnText = document.getElementById('soundBtnText');
+
+  function toggleVideoSound() {
+    if (!landingVideo) return;
+    landingVideo.muted = !landingVideo.muted;
+    if (landingVideo.muted) {
+      soundIconMuted?.classList.remove('hidden');
+      soundIconUnmuted?.classList.add('hidden');
+      if (soundBtnText) soundBtnText.innerText = 'Enable Sound / Audio 🔊';
+    } else {
+      soundIconMuted?.classList.add('hidden');
+      soundIconUnmuted?.classList.remove('hidden');
+      if (soundBtnText) soundBtnText.innerText = 'Sound Enabled 🔊';
+    }
+  }
+
+  if (btnToggleSound) {
+    btnToggleSound.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleVideoSound();
+    });
+  }
+
+  // Auto-unmute sound on first user touch/click gesture anywhere on landing page
+  const enableAudioOnUserGesture = () => {
+    if (landingVideo && landingVideo.muted) {
+      landingVideo.muted = false;
+      landingVideo.play().catch(() => {});
+      soundIconMuted?.classList.add('hidden');
+      soundIconUnmuted?.classList.remove('hidden');
+      if (soundBtnText) soundBtnText.innerText = 'Sound Enabled 🔊';
+    }
+  };
+
+  window.addEventListener('click', enableAudioOnUserGesture, { once: true });
+  window.addEventListener('touchstart', enableAudioOnUserGesture, { once: true });
+
   // Route & View Manager (/xmadmin, #xmadmin, or ?xmadmin Secret router)
   function handleRouting() {
     const urlStr = (window.location.href + ' ' + window.location.hash).toLowerCase();

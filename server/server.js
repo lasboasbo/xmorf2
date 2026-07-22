@@ -107,6 +107,48 @@ app.get('/api/uploads/download/:filename', (req, res) => {
   }
 });
 
+// Protected Video Streaming Endpoint (Inline streaming, no attachment download)
+app.get('/api/video/stream', (req, res) => {
+  const videoPath = path.join(__dirname, '../ssstik.io_@n1c0.cc_1784762726537.mp4');
+  if (!fs.existsSync(videoPath)) {
+    return res.status(404).send('Video stream not found');
+  }
+
+  const stat = fs.statSync(videoPath);
+  const fileSize = stat.size;
+  const range = req.headers.range;
+
+  res.setHeader('Content-Type', 'video/mp4');
+  res.setHeader('Content-Disposition', 'inline; filename="xmorf-stream.mp4"');
+  res.setHeader('Accept-Ranges', 'bytes');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+
+  if (range) {
+    const parts = range.replace(/bytes=/, "").split("-");
+    const start = parseInt(parts[0], 10);
+    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+    const chunksize = (end - start) + 1;
+    const file = fs.createReadStream(videoPath, { start, end });
+    const head = {
+      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+      'Accept-Ranges': 'bytes',
+      'Content-Length': chunksize,
+      'Content-Type': 'video/mp4',
+      'Content-Disposition': 'inline; filename="xmorf-stream.mp4"',
+    };
+    res.writeHead(206, head);
+    file.pipe(res);
+  } else {
+    const head = {
+      'Content-Length': fileSize,
+      'Content-Type': 'video/mp4',
+      'Content-Disposition': 'inline; filename="xmorf-stream.mp4"',
+    };
+    res.writeHead(200, head);
+    fs.createReadStream(videoPath).pipe(res);
+  }
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({
