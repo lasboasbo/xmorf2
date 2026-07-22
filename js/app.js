@@ -69,7 +69,33 @@ document.addEventListener('DOMContentLoaded', () => {
   initAntiBotWidgets();
   window.i18n.updateDOM();
 
-  let isAdminUnlocked = false;
+  // View Switchers between Landing Info Page and Auth Card View
+  const landingView = document.getElementById('landingView');
+  const authCardView = document.getElementById('authCardView');
+  const btnGoToWebmail = document.getElementById('btnGoToWebmail');
+  const btnQuickLogin = document.getElementById('btnQuickLogin');
+  const btnQuickRegister = document.getElementById('btnQuickRegister');
+  const btnBackToLanding = document.getElementById('btnBackToLanding');
+
+  function showAuthCard(mode = 'login') {
+    if (landingView) landingView.classList.add('hidden');
+    if (authCardView) authCardView.classList.remove('hidden');
+    if (mode === 'register') {
+      tabRegister.click();
+    } else {
+      tabLogin.click();
+    }
+  }
+
+  function showLandingInfo() {
+    if (authCardView) authCardView.classList.add('hidden');
+    if (landingView) landingView.classList.remove('hidden');
+  }
+
+  if (btnGoToWebmail) btnGoToWebmail.addEventListener('click', () => showAuthCard('login'));
+  if (btnQuickLogin) btnQuickLogin.addEventListener('click', () => showAuthCard('login'));
+  if (btnQuickRegister) btnQuickRegister.addEventListener('click', () => showAuthCard('register'));
+  if (btnBackToLanding) btnBackToLanding.addEventListener('click', showLandingInfo);
 
   // Route & View Manager (/xmadmin, #xmadmin, or ?xmadmin Secret router)
   function handleRouting() {
@@ -102,6 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         authScreen.classList.remove('hidden');
         appDashboard.classList.add('hidden');
+
+        if (urlStr.includes('login') || urlStr.includes('register')) {
+          showAuthCard(urlStr.includes('register') ? 'register' : 'login');
+        }
       }
     }
   }

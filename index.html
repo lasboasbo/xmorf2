@@ -18,10 +18,15 @@
        LANDING PAGE & AUTHENTICATION SCREEN
        ========================================================================== -->
   <div id="authScreen" class="auth-overlay">
-    <div class="landing-container">
-      
-      <!-- Landing Page Hero & Anti-Chat-Control Manifesto -->
-      <div class="landing-hero">
+    
+    <!-- FIRST VIEW: Landing Info Page with FUCK CHAT CONTROL & CTA Button to Webmail -->
+    <div id="landingView" class="landing-hero-wrapper">
+      <div class="landing-hero-content">
+        <div class="landing-brand-header">
+          <img src="logo.png" alt="Xmorf Logo" class="landing-logo">
+          <span class="landing-brand-name">Xmorf.net</span>
+        </div>
+
         <div class="hero-badge">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           <span>256-Bit Cryptographic Privacy Shield</span>
@@ -37,6 +42,19 @@
           <p>
             Your private messages belong strictly to <strong>you</strong>. Xmorf.net defends digital rights against warrantless EU scanning, client-side backdoor mandates, and invasive mass surveillance.
           </p>
+        </div>
+
+        <!-- Big CTA Button to Webmail / Auth Screen -->
+        <div class="hero-cta-group">
+          <button id="btnGoToWebmail" class="btn-primary hero-cta-btn">
+            <span>Enter Encrypted Webmail</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          <div class="hero-cta-sublinks">
+            <button id="btnQuickLogin" class="cta-link-btn">Sign In to Mailbox</button>
+            <span class="dot-separator">•</span>
+            <button id="btnQuickRegister" class="cta-link-btn">Create New Account</button>
+          </div>
         </div>
 
         <!-- Security Feature Cards Grid -->
@@ -82,9 +100,15 @@
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Auth Form Card (Login & Register) -->
+    <!-- SECOND VIEW: Webmail Auth Card (Login & Register Screen as before) -->
+    <div id="authCardView" class="auth-card-wrapper hidden">
       <div class="auth-card">
+        <button id="btnBackToLanding" class="back-to-landing-btn">
+          ← Back to Info Page
+        </button>
+
         <div class="auth-branding">
           <img src="logo.png" alt="Xmorf Logo" class="auth-logo">
           <h2 class="auth-title" data-i18n="appTitle">Xmorf.net | Encrypted Mail</h2>
@@ -149,8 +173,8 @@
           <button type="submit" class="btn-primary" data-i18n="registerBtn">Create Encrypted Account</button>
         </form>
       </div>
-
     </div>
+
   </div>
 
   <!-- ==========================================================================

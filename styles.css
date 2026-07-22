@@ -89,22 +89,110 @@ body {
    LANDING PAGE HERO & ANTI-CHAT-CONTROL MANIFESTO
    ========================================================================== */
 
-.landing-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 48px;
+.landing-hero-wrapper {
   width: 100%;
-  max-width: 1180px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 40px 20px;
-  z-index: 10;
+  animation: modalSpringIn 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.landing-brand-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.landing-logo {
+  height: 48px;
+  width: auto;
+  filter: drop-shadow(0 0 12px var(--primary-red-glow));
+}
+
+.landing-brand-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: white;
+}
+
+.hero-cta-group {
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.hero-cta-btn {
+  padding: 16px 36px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  border-radius: var(--radius-lg);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: auto;
+}
+
+.hero-cta-sublinks {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+
+.cta-link-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.cta-link-btn:hover {
+  color: var(--primary-red);
+  background: rgba(255, 30, 60, 0.1);
+}
+
+.dot-separator {
+  color: var(--text-dim);
+}
+
+.auth-card-wrapper {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  animation: modalSpringIn 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.back-to-landing-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: all 0.2s ease;
+}
+
+.back-to-landing-btn:hover {
+  background: rgba(255, 30, 60, 0.15);
+  color: white;
+  border-color: rgba(255, 30, 60, 0.35);
 }
 
 .landing-hero {
   flex: 1;
-  max-width: 580px;
-  animation: modalSpringIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 100%;
 }
 
 .hero-badge {
