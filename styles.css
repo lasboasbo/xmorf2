@@ -1355,49 +1355,106 @@ body {
   gap: 6px;
 }
 
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(5px);
+  z-index: 85;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar.sidebar-open ~ .sidebar-backdrop,
+.sidebar-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 @media (max-width: 768px) {
   .mobile-menu-toggle {
     display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .mobile-back-btn {
     display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 30, 60, 0.12);
+    border: 1px solid rgba(255, 30, 60, 0.3);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 15px rgba(255, 30, 60, 0.15);
   }
 
   .top-navbar {
-    padding: 0 8px;
-    gap: 4px;
+    padding: 0 10px;
+    height: 60px;
+    gap: 6px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .nav-brand {
+    gap: 6px;
+  }
+
+  .nav-logo {
+    height: 32px;
   }
 
   .nav-search {
-    margin: 0 6px;
+    margin: 0 4px;
     flex: 1;
-    max-width: 140px;
+    max-width: 145px;
+  }
+
+  .search-input {
+    font-size: 16px; /* Prevents iOS auto-zoom */
+    padding: 6px 12px 6px 32px;
   }
 
   .nav-actions {
-    gap: 6px;
+    gap: 4px;
     flex-shrink: 0;
   }
 
   .lang-selector {
     padding: 2px;
     flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
   }
 
   .lang-btn {
-    padding: 3px 6px;
+    padding: 4px 7px;
     font-size: 0.72rem;
+    border-radius: 10px;
   }
 
   .user-profile {
-    padding: 2px 6px;
+    padding: 2px 4px;
+    border: none;
+    background: transparent;
   }
 
   .user-avatar {
-    width: 26px;
-    height: 26px;
-    font-size: 0.72rem;
+    width: 30px;
+    height: 30px;
+    font-size: 0.75rem;
+    border-radius: 50%;
   }
 
   .user-name {
@@ -1407,17 +1464,20 @@ body {
   .main-content {
     position: relative;
     overflow-x: hidden;
+    height: calc(100vh - 60px);
+    margin-top: 60px;
   }
 
   .sidebar {
     position: fixed;
-    top: 64px;
-    left: -260px;
+    top: 60px;
+    left: -270px;
     bottom: 0;
-    width: 250px;
+    width: 260px;
     z-index: 90;
-    transition: left 0.3s ease;
-    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8);
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 10px 0 35px rgba(0, 0, 0, 0.9);
+    background: #0d0f17;
   }
 
   .sidebar.sidebar-open {
@@ -1427,6 +1487,15 @@ body {
   .email-list-pane {
     width: 100%;
     border-right: none;
+    padding: 12px 10px;
+  }
+
+  .email-item {
+    margin-bottom: 8px;
+    border-radius: 12px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   .email-reader-pane {
@@ -1435,10 +1504,11 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: #0d0f15;
+    background: #090b10;
     z-index: 80;
+    padding: 16px 12px;
     transform: translateX(100%);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow-y: auto;
   }
 
@@ -1446,21 +1516,41 @@ body {
     transform: translateX(0);
   }
 
-  .admin-panel-container {
+  .reader-body {
+    font-size: 0.95rem;
+    line-height: 1.65;
     padding: 16px 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .admin-panel-container {
+    padding: 14px 10px;
+  }
+
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 
   .admin-table-card {
     overflow-x: auto;
+    border-radius: 14px;
   }
 
   .admin-table {
-    min-width: 600px;
+    min-width: 580px;
   }
 
   .modal-card {
     max-width: 94%;
     padding: 20px;
+    border-radius: 20px;
+  }
+
+  .input-field {
+    font-size: 16px; /* Prevents iOS auto-zoom on input focus */
   }
 }
 
@@ -1468,17 +1558,25 @@ body {
   .nav-title {
     display: none;
   }
+
   .nav-search {
-    max-width: 105px;
+    max-width: 110px;
   }
+
   .lang-selector {
     border-radius: 12px;
   }
+
   .lang-btn {
-    padding: 2px 4px;
-    font-size: 0.66rem;
+    padding: 3px 5px;
+    font-size: 0.68rem;
+  }
+
+  .admin-stats-grid {
+    grid-template-columns: 1fr;
   }
 }
+
 
 
 

@@ -125,11 +125,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mobile Drawer Toggle & View Switching
   const btnMobileMenu = document.getElementById('btnMobileMenu');
   const sidebar = document.querySelector('.sidebar');
+  const sidebarBackdrop = document.getElementById('sidebarBackdrop');
   const mainContent = document.querySelector('.main-content');
 
   if (btnMobileMenu) {
     btnMobileMenu.addEventListener('click', () => {
       sidebar.classList.toggle('sidebar-open');
+    });
+  }
+
+  if (sidebarBackdrop) {
+    sidebarBackdrop.addEventListener('click', () => {
+      sidebar.classList.remove('sidebar-open');
     });
   }
 
