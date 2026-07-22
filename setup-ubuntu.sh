@@ -92,7 +92,9 @@ postmap /etc/postfix/transport
 # Add master pipe handler to master.cf
 if ! grep -q "xmorfpipe" /etc/postfix/master.cf; then
 cat <<EOF >> /etc/postfix/master.cf
-xmorfpipe flags=Fqhu user=nobody argv=${NODE_PATH} ${APP_DIR}/server/scripts/mail-pipe.js
+
+xmorfpipe unix - n n - - pipe
+  flags=Fqhu user=nobody argv=${NODE_PATH} ${APP_DIR}/server/scripts/mail-pipe.js
 EOF
 fi
 
