@@ -58,6 +58,8 @@ EOF
 
 # 4. Configure Postfix to pipe incoming mail directly into Node.js Webhook
 echo "📩 Configuring Postfix Mail Pipeline..."
+echo "${DOMAIN}" > /etc/mailname
+
 cat <<EOF > /etc/postfix/main.cf
 smtpd_banner = \$myhostname ESMTP \$mail_name
 biff = no
