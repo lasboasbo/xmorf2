@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Route & View Manager (/xmadmin, #xmadmin, or ?xmadmin Secret router)
   function handleRouting() {
-    const urlStr = window.location.href.toLowerCase();
+    const urlStr = (window.location.href + ' ' + window.location.hash).toLowerCase();
     const isSecretAdmin = urlStr.includes('xmadmin');
 
     if (isSecretAdmin) {
@@ -103,6 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
+
+  // Bind router to hashchange, popstate & execute on initial load
+  window.addEventListener('hashchange', handleRouting);
+  window.addEventListener('popstate', handleRouting);
+  handleRouting();
 
   // Admin 16-Digit Master Key Form Submission
   const adminAuthForm = document.getElementById('adminAuthForm');
