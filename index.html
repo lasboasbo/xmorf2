@@ -14,71 +14,142 @@
   <!-- ==========================================================================
        AUTHENTICATION & ANTI-BOT SCREEN
        ========================================================================== -->
+  <!-- ==========================================================================
+       LANDING PAGE & AUTHENTICATION SCREEN
+       ========================================================================== -->
   <div id="authScreen" class="auth-overlay">
-    <div class="auth-card">
-      <div class="auth-branding">
-        <img src="logo.png" alt="Xmorf Logo" class="auth-logo">
-        <h1 class="auth-title" data-i18n="appTitle">Xmorf.net | Encrypted Mail</h1>
-        <p class="auth-subtitle" data-i18n="brandSubtitle">256-Bit Cryptographic Webmail</p>
-      </div>
-
-      <!-- Auth Tabs (Login / Register) -->
-      <div class="auth-tabs">
-        <button id="tabLogin" class="auth-tab active" data-i18n="loginTab">Sign In</button>
-        <button id="tabRegister" class="auth-tab" data-i18n="registerTab">Register</button>
-      </div>
-
-      <!-- Login Form -->
-      <form id="loginForm">
-        <div class="form-group">
-          <label class="form-label" data-i18n="emailLabel">Email Address</label>
-          <input type="email" id="loginEmail" class="input-field" placeholder="demo@xmorf.net" data-i18n-placeholder="emailPlaceholder" value="demo@xmorf.net" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" data-i18n="passwordLabel">Password</label>
-          <input type="password" id="loginPassword" class="input-field" placeholder="••••••••••••" data-i18n-placeholder="passwordPlaceholder" value="password" required>
+    <div class="landing-container">
+      
+      <!-- Landing Page Hero & Anti-Chat-Control Manifesto -->
+      <div class="landing-hero">
+        <div class="hero-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>256-Bit Cryptographic Privacy Shield</span>
         </div>
 
-        <!-- Anti-Bot Verification Slider Component -->
-        <div id="loginAntibotContainer"></div>
+        <h1 class="hero-title">FUCK CHAT CONTROL</h1>
 
-        <button type="submit" class="btn-primary" data-i18n="loginBtn">Unlock Mailbox</button>
-        <div class="demo-notice" data-i18n="demoAccountNotice">Demo credentials: demo@xmorf.net / password</div>
-      </form>
+        <p class="hero-subtitle">
+          100% Uncompromised Encrypted Webmail. Zero Backdoors. Zero Mass Surveillance.
+        </p>
 
-      <!-- Register Form with Strong Password Meter -->
-      <form id="registerForm" class="hidden">
-        <div class="form-group">
-          <label class="form-label" data-i18n="fullNameLabel">Full Name</label>
-          <input type="text" id="regFullName" class="input-field" placeholder="Alex Mercer" data-i18n-placeholder="fullNamePlaceholder" required>
+        <div class="hero-manifesto-box">
+          <p>
+            Your private messages belong strictly to <strong>you</strong>. Xmorf.net defends digital rights against warrantless EU scanning, client-side backdoor mandates, and invasive mass surveillance.
+          </p>
         </div>
-        <div class="form-group">
-          <label class="form-label" data-i18n="desiredUsername">Desired Address</label>
-          <input type="text" id="regUsername" class="input-field" placeholder="newuser@xmorf.net" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" data-i18n="passwordLabel">Password</label>
-          <input type="password" id="regPassword" class="input-field" placeholder="••••••••••••" data-i18n-placeholder="passwordPlaceholder" required>
-          
-          <!-- Strong Password Meter Component -->
-          <div class="pass-strength-box">
-            <div class="pass-strength-bar">
-              <div id="passStrengthFill" class="pass-strength-fill"></div>
+
+        <!-- Security Feature Cards Grid -->
+        <div class="landing-features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
-            <div class="pass-req-list">
-              <div id="reqLength" class="pass-req-item"><span>✖</span> <span data-i18n="passReqLength">Min 8 chars</span></div>
-              <div id="reqUpper" class="pass-req-item"><span>✖</span> <span data-i18n="passReqUpper">Uppercase (A-Z)</span></div>
-              <div id="reqNumber" class="pass-req-item"><span>✖</span> <span data-i18n="passReqNumber">Number (0-9)</span></div>
-              <div id="reqSpecial" class="pass-req-item"><span>✖</span> <span data-i18n="passReqSpecial">Special (!@#$)</span></div>
+            <div>
+              <div class="feature-title">Zero-Knowledge Shield</div>
+              <div class="feature-desc">End-to-end 256-bit cryptographic encryption. Only sender & recipient can read messages.</div>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div>
+              <div class="feature-title">Anti-Chat-Control Infrastructure</div>
+              <div class="feature-desc">Self-hosted sovereign servers protected against government backdoor mandates.</div>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            </div>
+            <div>
+              <div class="feature-title">Anti-Bot & Anti-Spam Barrier</div>
+              <div class="feature-desc">Human-verification security puzzle slider blocks automated crawlers and malicious bots.</div>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <div>
+              <div class="feature-title">Real-Time Messaging & Files</div>
+              <div class="feature-desc">High-speed encrypted 2-way email delivery with file attachment support up to 2 MB.</div>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Anti-Bot Verification Slider Component -->
-        <div id="regAntibotContainer"></div>
+      <!-- Auth Form Card (Login & Register) -->
+      <div class="auth-card">
+        <div class="auth-branding">
+          <img src="logo.png" alt="Xmorf Logo" class="auth-logo">
+          <h2 class="auth-title" data-i18n="appTitle">Xmorf.net | Encrypted Mail</h2>
+          <p class="auth-subtitle" data-i18n="brandSubtitle">256-Bit Cryptographic Webmail</p>
+        </div>
 
-        <button type="submit" class="btn-primary" data-i18n="registerBtn">Create Encrypted Account</button>
-      </form>
+        <!-- Auth Tabs (Login / Register) -->
+        <div class="auth-tabs">
+          <button id="tabLogin" class="auth-tab active" data-i18n="loginTab">Sign In</button>
+          <button id="tabRegister" class="auth-tab" data-i18n="registerTab">Register</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label" data-i18n="emailLabel">Email Address</label>
+            <input type="email" id="loginEmail" class="input-field" placeholder="demo@xmorf.net" data-i18n-placeholder="emailPlaceholder" value="demo@xmorf.net" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="passwordLabel">Password</label>
+            <input type="password" id="loginPassword" class="input-field" placeholder="••••••••••••" data-i18n-placeholder="passwordPlaceholder" value="password" required>
+          </div>
+
+          <!-- Anti-Bot Verification Slider Component -->
+          <div id="loginAntibotContainer"></div>
+
+          <button type="submit" class="btn-primary" data-i18n="loginBtn">Unlock Mailbox</button>
+          <div class="demo-notice" data-i18n="demoAccountNotice">Demo credentials: demo@xmorf.net / password</div>
+        </form>
+
+        <!-- Register Form with Strong Password Meter -->
+        <form id="registerForm" class="hidden">
+          <div class="form-group">
+            <label class="form-label" data-i18n="fullNameLabel">Full Name</label>
+            <input type="text" id="regFullName" class="input-field" placeholder="Alex Mercer" data-i18n-placeholder="fullNamePlaceholder" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="desiredUsername">Desired Address</label>
+            <input type="text" id="regUsername" class="input-field" placeholder="newuser@xmorf.net" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="passwordLabel">Password</label>
+            <input type="password" id="regPassword" class="input-field" placeholder="••••••••••••" data-i18n-placeholder="passwordPlaceholder" required>
+            
+            <!-- Strong Password Meter Component -->
+            <div class="pass-strength-box">
+              <div class="pass-strength-bar">
+                <div id="passStrengthFill" class="pass-strength-fill"></div>
+              </div>
+              <div class="pass-req-list">
+                <div id="reqLength" class="pass-req-item"><span>✖</span> <span data-i18n="passReqLength">Min 8 chars</span></div>
+                <div id="reqUpper" class="pass-req-item"><span>✖</span> <span data-i18n="passReqUpper">Uppercase (A-Z)</span></div>
+                <div id="reqNumber" class="pass-req-item"><span>✖</span> <span data-i18n="passReqNumber">Number (0-9)</span></div>
+                <div id="reqSpecial" class="pass-req-item"><span>✖</span> <span data-i18n="passReqSpecial">Special (!@#$)</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Anti-Bot Verification Slider Component -->
+          <div id="regAntibotContainer"></div>
+
+          <button type="submit" class="btn-primary" data-i18n="registerBtn">Create Encrypted Account</button>
+        </form>
+      </div>
+
     </div>
   </div>
 
