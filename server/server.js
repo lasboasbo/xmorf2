@@ -109,7 +109,7 @@ app.get('/api/uploads/download/:filename', (req, res) => {
 
 // Protected Video Streaming Endpoint (Inline streaming, no attachment download)
 app.get('/api/video/stream', (req, res) => {
-  const videoPath = path.join(__dirname, '../ssstik.io_@n1c0.cc_1784762726537.mp4');
+  const videoPath = path.join(__dirname, '../video.mp4');
   if (!fs.existsSync(videoPath)) {
     return res.status(404).send('Video stream not found');
   }
