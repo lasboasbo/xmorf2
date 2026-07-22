@@ -156,6 +156,39 @@ body {
   box-shadow: 0 15px 45px rgba(0, 0, 0, 0.8), 0 0 35px rgba(255, 30, 60, 0.25);
 }
 
+/* Video Logo Watermark Overlay */
+.video-watermark {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(10, 12, 18, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 30, 60, 0.4);
+  padding: 5px 12px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 12px rgba(255, 30, 60, 0.2);
+  pointer-events: none;
+  user-select: none;
+}
+
+.watermark-logo {
+  height: 22px;
+  width: auto;
+  filter: drop-shadow(0 0 6px var(--primary-red-glow));
+}
+
+.watermark-text {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: white;
+  letter-spacing: 0.5px;
+}
+
 .video-protection-overlay {
   position: absolute;
   top: 0;
