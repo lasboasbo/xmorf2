@@ -147,12 +147,13 @@ body {
 .video-hero-card {
   position: relative;
   width: 100%;
+  max-width: 480px;
+  margin: 0 auto 28px auto;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background: #000;
-  border: 1px solid rgba(255, 30, 60, 0.3);
-  margin-bottom: 28px;
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 30, 60, 0.2);
+  background: #030407;
+  border: 1px solid rgba(255, 30, 60, 0.35);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.8), 0 0 35px rgba(255, 30, 60, 0.25);
 }
 
 .video-protection-overlay {
@@ -172,9 +173,10 @@ body {
 .landing-video {
   width: 100%;
   height: auto;
-  max-height: 480px;
+  max-height: 650px;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
+  background: #000;
   pointer-events: none;
   user-select: none;
   -webkit-user-select: none;
