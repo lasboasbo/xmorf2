@@ -2162,6 +2162,117 @@ body {
   .admin-stats-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Landing Page Mobile Optimizations */
+  .landing-hero-wrapper {
+    padding: 16px 8px;
+    max-width: 100%;
+  }
+
+  .landing-brand-header {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .landing-logo {
+    height: 38px;
+  }
+
+  .landing-brand-name {
+    font-size: 1.25rem;
+  }
+
+  .landing-brand-tag {
+    font-size: 0.72rem;
+  }
+
+  .hero-title {
+    font-size: 1.85rem !important;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin-bottom: 16px;
+  }
+
+  .hero-manifesto-box {
+    padding: 12px 14px;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  .hero-cta-group {
+    width: 100%;
+    align-items: stretch;
+    margin-bottom: 24px;
+  }
+
+  .hero-cta-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+    font-size: 1rem;
+  }
+
+  .hero-cta-sublinks {
+    justify-content: center;
+    width: 100%;
+    font-size: 0.82rem;
+  }
+
+  .comparison-section {
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+  }
+
+  .matrix-table-card {
+    padding: 8px 4px;
+    border-radius: 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .comparison-table {
+    min-width: 520px;
+  }
+
+  .comparison-table th, 
+  .comparison-table td {
+    padding: 10px 8px;
+    font-size: 0.78rem;
+  }
+
+  .landing-features-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .feature-card {
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+
+  .feature-card:active {
+    transform: scale(0.98);
+    background: rgba(255, 30, 60, 0.12);
+  }
+
+  .back-to-landing-btn {
+    width: 100%;
+    text-align: center;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+    touch-action: manipulation;
+  }
 }
 
 
