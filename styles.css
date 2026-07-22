@@ -211,16 +211,16 @@ body {
 }
 
 .check-yes {
-  color: #34d399;
+  color: #ff4d6d;
   font-weight: 700;
 }
 
 .check-partial {
-  color: #fbbf24;
+  color: #f59e0b;
 }
 
 .check-no {
-  color: #f87171;
+  color: #ef4444;
 }
 
 .landing-brand-header {
