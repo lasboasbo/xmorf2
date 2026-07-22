@@ -943,52 +943,67 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Real Attachment File Downloader Function
+  // Real Attachment File Downloader Function (Mobile & Desktop Compatible)
   function downloadRealAttachment(att) {
-    showToast(`Transferring file from Node server: ${att.name}...`);
+    if (att.purged || att.name === 'this file got purged on a data purge') {
+      showToast('This file has been purged from server disk.', 'error');
+      return;
+    }
 
-    const serverDownloadUrl = `${window.xmorfStore.apiBase}/uploads/download/${encodeURIComponent(att.name)}`;
+    showToast(`Downloading file: ${att.name}...`);
 
-    fetch(serverDownloadUrl)
-      .then(res => {
-        if (!res.ok) throw new Error('Server transfer fallback');
-        return res.blob();
-      })
-      .then(blob => {
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = blobUrl;
-        a.download = att.name;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => {
-          document.body.removeChild(a);
-          URL.revokeObjectURL(blobUrl);
-        }, 1000);
-      })
-      .catch(() => {
-        let blob;
-        if (att.content && att.content.startsWith('data:')) {
-          blob = dataURLtoBlob(att.content);
-        } else {
-          const contentText = att.content || `Xmorf Encrypted Attachment File: ${att.name}\nTransferred from Node.js Express Backend\nSecurity: 256-Bit Protection\nDate: ${new Date().toLocaleString()}`;
-          blob = new Blob([contentText], { type: 'application/octet-stream' });
+    const filenameToFetch = att.filename || att.name;
+    const isLocalFileProtocol = window.location.protocol === 'file:';
+
+    // 1. Direct Server Download (Triggers native HTTP attachment download on iOS & Android)
+    if (!isLocalFileProtocol) {
+      const serverDownloadUrl = `${window.xmorfStore.apiBase}/uploads/download/${encodeURIComponent(filenameToFetch)}`;
+      
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.href = serverDownloadUrl;
+      downloadAnchor.download = att.name;
+      downloadAnchor.target = '_blank';
+      downloadAnchor.rel = 'noopener';
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      
+      setTimeout(() => {
+        if (downloadAnchor.parentNode) {
+          downloadAnchor.parentNode.removeChild(downloadAnchor);
         }
+      }, 1000);
+      return;
+    }
 
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = blobUrl;
-        a.download = att.name;
-        document.body.appendChild(a);
-        a.click();
+    // 2. Offline / Local Data URL Fallback
+    try {
+      let blobUrl;
+      if (att.content && att.content.startsWith('data:')) {
+        const blob = dataURLtoBlob(att.content);
+        blobUrl = URL.createObjectURL(blob);
+      } else {
+        const text = att.content || `Xmorf Encrypted Attachment: ${att.name}\nTransferred from Node.js Express Backend\nSecurity: 256-Bit Protection\nDate: ${new Date().toLocaleString()}`;
+        const blob = new Blob([text], { type: 'application/octet-stream' });
+        blobUrl = URL.createObjectURL(blob);
+      }
 
-        setTimeout(() => {
-          document.body.removeChild(a);
-          URL.revokeObjectURL(blobUrl);
-        }, 1000);
-      });
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = att.name;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      document.body.appendChild(link);
+      link.click();
+
+      setTimeout(() => {
+        if (link.parentNode) {
+          link.parentNode.removeChild(link);
+        }
+        URL.revokeObjectURL(blobUrl);
+      }, 1000);
+    } catch (e) {
+      showToast('Failed to download attachment.', 'error');
+    }
   }
 
   function dataURLtoBlob(dataurl) {
