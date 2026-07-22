@@ -122,9 +122,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  window.addEventListener('hashchange', handleRouting);
-  window.addEventListener('popstate', handleRouting);
-  handleRouting();
+  // Mobile Drawer Toggle & View Switching
+  const btnMobileMenu = document.getElementById('btnMobileMenu');
+  const sidebar = document.querySelector('.sidebar');
+  const mainContent = document.querySelector('.main-content');
+
+  if (btnMobileMenu) {
+    btnMobileMenu.addEventListener('click', () => {
+      sidebar.classList.toggle('sidebar-open');
+    });
+  }
 
   // Strong Password Checker
   regPassword.addEventListener('input', () => {
@@ -380,6 +387,11 @@ document.addEventListener('DOMContentLoaded', () => {
         renderEmailList();
         renderEmailReader();
         updateUnreadBadge();
+
+        if (window.innerWidth <= 768) {
+          mainContent.classList.add('mobile-show-reader');
+          sidebar.classList.remove('sidebar-open');
+        }
       });
 
       emailList.appendChild(li);
@@ -434,6 +446,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     emailReaderPane.innerHTML = `
+      <button id="btnMobileBack" class="mobile-back-btn">
+        ← Back to Mail List
+      </button>
       <div class="reader-header">
         <div class="reader-toolbar">
           <div style="display: flex; gap: 8px;">
@@ -461,19 +476,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `}
           </div>
         </div>
-
-        <h1 class="reader-subject">${escapeHtml(email.subject)}</h1>
-
-        <div class="reader-meta">
-          <div class="meta-avatar">${email.senderName.substring(0, 2).toUpperCase()}</div>
-          <div class="meta-info">
-            <div class="meta-sender">${escapeHtml(email.senderName)} &lt;${escapeHtml(email.senderEmail)}&gt;</div>
-            <div class="meta-recipient">To: ${escapeHtml(email.recipient)} • ${escapeHtml(email.date)}</div>
-          </div>
-          <div class="meta-security-badge" data-i18n="encryptedBadge">
-            ${window.XmorfIcons.shield} ${window.i18n.get('encryptedBadge')}
-          </div>
-        </div>
       </div>
 
       <div class="reader-body">${escapeHtml(email.body)}</div>
@@ -493,13 +495,18 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Event listeners for reader actions
-    document.getElementById('btnStar').addEventListener('click', async () => {
+    // Attach event listener for mobile back button
+    document.getElementById('btnMobileBack')?.addEventListener('click', () => {
+      mainContent.classList.remove('mobile-show-reader');
+    });
+
+    // Attach event listeners for email action buttons
+    document.getElementById('btnStar')?.addEventListener('click', async () => {
       await window.xmorfStore.toggleStar(email.id);
       renderDashboard();
     });
 
-    document.getElementById('btnReply').addEventListener('click', () => {
+    document.getElementById('btnReply')?.addEventListener('click', () => {
       openComposeModal({
         recipient: email.senderEmail,
         subject: `Re: ${email.subject}`

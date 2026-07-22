@@ -1327,3 +1327,114 @@ body {
   background: rgba(16, 185, 129, 0.3);
 }
 
+/* ==========================================================================
+   MOBILE & RESPONSIVE DESIGN ENHANCEMENTS (Auto-Detection & Touch UX)
+   ========================================================================== */
+
+.mobile-menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  padding: 8px;
+  cursor: pointer;
+}
+
+.mobile-back-btn {
+  display: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-main);
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
+  .mobile-back-btn {
+    display: inline-flex;
+  }
+
+  .top-navbar {
+    padding: 0 12px;
+  }
+
+  .nav-search {
+    margin: 0 10px;
+    max-width: 180px;
+  }
+
+  .user-name {
+    display: none;
+  }
+
+  .main-content {
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 64px;
+    left: -260px;
+    bottom: 0;
+    width: 250px;
+    z-index: 90;
+    transition: left 0.3s ease;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8);
+  }
+
+  .sidebar.sidebar-open {
+    left: 0;
+  }
+
+  .email-list-pane {
+    width: 100%;
+    border-right: none;
+  }
+
+  .email-reader-pane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #0d0f15;
+    z-index: 80;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+  }
+
+  .main-content.mobile-show-reader .email-reader-pane {
+    transform: translateX(0);
+  }
+
+  .admin-panel-container {
+    padding: 16px 12px;
+  }
+
+  .admin-table-card {
+    overflow-x: auto;
+  }
+
+  .admin-table {
+    min-width: 600px;
+  }
+
+  .modal-card {
+    max-width: 94%;
+    padding: 20px;
+  }
+}
+
+
