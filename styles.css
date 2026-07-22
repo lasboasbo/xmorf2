@@ -147,9 +147,9 @@ body {
 .video-hero-card {
   position: relative;
   width: 100%;
-  max-width: 480px;
-  margin: 0 auto 28px auto;
-  border-radius: var(--radius-lg);
+  max-width: 760px;
+  margin: 0 auto 32px auto;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   background: #030407;
   border: 1px solid rgba(255, 30, 60, 0.35);
@@ -2316,6 +2316,44 @@ body {
     font-size: 0.84rem;
     line-height: 1.5;
     margin-bottom: 20px;
+  }
+
+  .video-hero-card {
+    max-width: 100%;
+    margin-bottom: 20px;
+    border-radius: 14px;
+  }
+
+  .video-watermark {
+    top: 10px;
+    right: 10px;
+    padding: 3px 8px;
+  }
+
+  .watermark-logo {
+    height: 16px;
+  }
+
+  .watermark-text {
+    font-size: 0.68rem;
+  }
+
+  .video-controls-bar {
+    padding: 8px 10px;
+  }
+
+  .video-sound-btn {
+    padding: 5px 10px;
+    font-size: 0.72rem;
+  }
+
+  .video-tag-pill {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+  }
+
+  .landing-video {
+    max-height: 480px;
   }
 
   .hero-cta-group {
