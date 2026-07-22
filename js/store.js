@@ -8,7 +8,7 @@ class XmorfStore {
       ? `${window.location.origin}/api`
       : 'http://localhost:5000/api';
 
-    this.currentUser = JSON.parse(localStorage.getItem('xmorf_user')) || null;
+    this.currentUser = null; // Always require explicit login on site visit
     this.currentFolder = 'inbox';
     this.selectedEmailId = null;
     this.searchQuery = '';
