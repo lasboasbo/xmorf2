@@ -87,6 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!isAdminUnlocked) {
         adminAuthOverlay.classList.remove('hidden');
         adminContent.classList.add('hidden');
+        const keyInput = document.getElementById('adminKeyInput');
+        if (keyInput) keyInput.value = '';
       } else {
         adminAuthOverlay.classList.add('hidden');
         adminContent.classList.remove('hidden');
@@ -109,16 +111,18 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('popstate', handleRouting);
   handleRouting();
 
-  // Admin 16-Digit Master Key Form Submission
+  // Admin Master Key Form Submission
   const adminAuthForm = document.getElementById('adminAuthForm');
   if (adminAuthForm) {
     adminAuthForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const key = document.getElementById('adminKeyInput').value;
+      const keyInput = document.getElementById('adminKeyInput');
+      const key = keyInput ? keyInput.value : '';
 
       const res = await window.xmorfStore.adminLoginApi(key);
       if (res && res.success) {
         isAdminUnlocked = true;
+        if (keyInput) keyInput.value = '';
         showToast('Admin Master Key Verified! Overseer Unlocked.');
         handleRouting();
       } else {

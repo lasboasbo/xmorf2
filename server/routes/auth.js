@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const DB_PATH = path.join(__dirname, '../data/db.json');
-const ADMIN_MASTER_KEY = process.env.ADMIN_KEY || '1234-5678-9012-3456';
+const ADMIN_MASTER_KEY = process.env.ADMIN_KEY || '7449-74491-74492-74493';
 
 function readDB() {
   try {
@@ -37,17 +37,19 @@ router.post('/verify-bot', (req, res) => {
   });
 });
 
-// Admin Master 16-Digit Key Verification
+// Admin Master Key Verification
 router.post('/admin-login', (req, res) => {
   const { adminKey } = req.body;
   if (!adminKey) {
-    return res.status(400).json({ success: false, message: '16-digit Admin Master Key required.' });
+    return res.status(400).json({ success: false, message: 'Admin Master Security Key required.' });
   }
 
-  const cleanKey = adminKey.trim().replace(/\s+/g, '');
-  const cleanTarget = ADMIN_MASTER_KEY.replace(/[-\s]/g, '');
+  const cleanKey = adminKey.trim().replace(/[-\s]/g, '');
+  const targetKey = '7449-74491-74492-74493';
+  const cleanTarget = targetKey.replace(/[-\s]/g, '');
+  const envTarget = ADMIN_MASTER_KEY.replace(/[-\s]/g, '');
 
-  if (cleanKey === ADMIN_MASTER_KEY || cleanKey === cleanTarget || cleanKey === '1234567890123456') {
+  if (cleanKey === cleanTarget || cleanKey === envTarget || adminKey.trim() === targetKey || adminKey.trim() === ADMIN_MASTER_KEY) {
     return res.json({
       success: true,
       message: 'Admin Master Key verified! Access granted to Overseer Panel.',
@@ -57,7 +59,7 @@ router.post('/admin-login', (req, res) => {
 
   return res.status(401).json({
     success: false,
-    message: 'Invalid 16-digit Admin Master Key. Access denied!'
+    message: 'Invalid Admin Master Key. Access denied!'
   });
 });
 
