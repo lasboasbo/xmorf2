@@ -1,0 +1,4 @@
+PROJECT XMORF DEPLOYMENT SPECS
+Node Clusters: 4
+Redundancy: Dual-Active Failover
+Encryption: AES-GCM-256

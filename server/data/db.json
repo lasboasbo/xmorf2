@@ -1,0 +1,160 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "email": "demo@xmorf.net",
+      "name": "Demo User",
+      "avatar": "DU",
+      "password": "password",
+      "storageUsed": "2.4 GB",
+      "storageLimit": "15 GB",
+      "status": "Active"
+    },
+    {
+      "id": "u2",
+      "email": "admin@xmorf.net",
+      "name": "Xmorf Administrator",
+      "avatar": "XA",
+      "password": "password",
+      "storageUsed": "8.1 GB",
+      "storageLimit": "50 GB",
+      "status": "Active"
+    },
+    {
+      "id": "u_1784735547820",
+      "email": "xenon@xmorf.net",
+      "name": "xenon",
+      "avatar": "XE",
+      "password": "Tim12345#",
+      "storageUsed": "0.0 GB",
+      "storageLimit": "15 GB",
+      "status": "Active",
+      "lastLogin": "2026-07-22T16:11:45.533Z"
+    },
+    {
+      "id": "u_1784737025649",
+      "email": "jonas@xmorf.net",
+      "name": "jonas gaylord",
+      "avatar": "JO",
+      "password": "Jonas12345#",
+      "status": "Active",
+      "createdAt": "2026-07-22T16:17:05.649Z",
+      "lastLogin": "2026-07-22T16:34:06.968Z",
+      "lastEmailSent": "Never"
+    }
+  ],
+  "emails": [
+    {
+      "id": "em-1784737025649",
+      "ownerEmail": "jonas@xmorf.net",
+      "folder": "inbox",
+      "senderName": "Xmorf Security Team",
+      "senderEmail": "system@xmorf.net",
+      "recipient": "jonas@xmorf.net",
+      "subject": "Welcome to your new @xmorf.net mailbox",
+      "preview": "Your identity and mailbox are secured with Xmorf 256-bit encryption.",
+      "body": "Hello jonas gaylord,\n\nThank you for choosing Xmorf.net Secure Mail!\nYour account (jonas@xmorf.net) has been successfully created and secured against automated bots.\n\nYou now have full access to high-speed encrypted messaging, file attachments, and soft-delete/restore capabilities.\n\nBest regards,\nXmorf Core Team",
+      "timestamp": "Just now",
+      "date": "18:17",
+      "isUnread": false,
+      "isStarred": true,
+      "attachments": []
+    },
+    {
+      "id": "em-inbox-1784735707308",
+      "ownerEmail": "demo@xmorf.net",
+      "folder": "inbox",
+      "senderName": "xenon",
+      "senderEmail": "xenon@xmorf.net",
+      "recipient": "demo@xmorf.net",
+      "subject": "hihi",
+      "preview": "hellosa...",
+      "body": "hellosa",
+      "timestamp": "Just now",
+      "date": "17:55",
+      "isUnread": false,
+      "isStarred": false,
+      "attachments": [
+        {
+          "id": "att-1784735702611-5",
+          "name": "this file got purged on a data purge",
+          "size": "0 B",
+          "type": "document",
+          "filename": "1784735702592-214770182-KSC Herne(9).pptx",
+          "url": "/api/uploads/1784735702592-214770182-KSC Herne(9).pptx",
+          "content": "this file got purged on a data purge",
+          "purged": true
+        }
+      ]
+    },
+    {
+      "id": "em-sent-1784735707308",
+      "ownerEmail": "xenon@xmorf.net",
+      "folder": "sent",
+      "senderName": "xenon",
+      "senderEmail": "xenon@xmorf.net",
+      "recipient": "demo@xmorf.net",
+      "subject": "hihi",
+      "preview": "hellosa...",
+      "body": "hellosa",
+      "timestamp": "Just now",
+      "date": "17:55",
+      "isUnread": false,
+      "isStarred": false,
+      "attachments": [
+        {
+          "id": "att-1784735702611-5",
+          "name": "this file got purged on a data purge",
+          "size": "0 B",
+          "type": "document",
+          "filename": "1784735702592-214770182-KSC Herne(9).pptx",
+          "url": "/api/uploads/1784735702592-214770182-KSC Herne(9).pptx",
+          "content": "this file got purged on a data purge",
+          "purged": true
+        }
+      ]
+    },
+    {
+      "id": "em-1784735547820",
+      "ownerEmail": "xenon@xmorf.net",
+      "folder": "inbox",
+      "senderName": "Xmorf Security Team",
+      "senderEmail": "system@xmorf.net",
+      "recipient": "xenon@xmorf.net",
+      "subject": "Welcome to your new @xmorf.net mailbox",
+      "preview": "Your identity and mailbox are secured with Xmorf 256-bit encryption.",
+      "body": "Hello xenon,\n\nThank you for choosing Xmorf.net Secure Mail!\nYour account (xenon@xmorf.net) has been successfully created and secured against automated bots.\n\nYou now have full access to high-speed encrypted messaging, file attachments, and soft-delete/restore capabilities.\n\nBest regards,\nXmorf Core Team",
+      "timestamp": "Just now",
+      "date": "17:52",
+      "isUnread": false,
+      "isStarred": true,
+      "attachments": []
+    },
+    {
+      "id": "em-101",
+      "ownerEmail": "demo@xmorf.net",
+      "folder": "inbox",
+      "senderName": "Xmorf Security Core",
+      "senderEmail": "security@xmorf.net",
+      "recipient": "demo@xmorf.net",
+      "subject": "Welcome to Xmorf.net Encrypted Mail",
+      "preview": "Your high-security email account @xmorf.net is active.",
+      "body": "Hello and welcome to Xmorf.net Secure Mail!\nYour account is secured with 256-Bit cryptographic protection.",
+      "timestamp": "16:30",
+      "date": "Today, 16:30",
+      "isUnread": false,
+      "isStarred": true,
+      "attachments": [
+        {
+          "id": "att-1",
+          "name": "this file got purged on a data purge",
+          "size": "0 B",
+          "type": "pdf",
+          "url": "/api/uploads/Xmorf_Security_Whitepaper.pdf",
+          "content": "this file got purged on a data purge",
+          "purged": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xmorf.net | Encrypted Mail & Anti-Bot Protection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ==========================================================================
+       AUTHENTICATION & ANTI-BOT SCREEN
+       ========================================================================== -->
+  <div id="authScreen" class="auth-overlay">
+    <div class="auth-card">
+      <div class="auth-branding">
+        <img src="logo.png" alt="Xmorf Logo" class="auth-logo">
+        <h1 class="auth-title" data-i18n="appTitle">Xmorf.net | Encrypted Mail</h1>
+        <p class="auth-subtitle" data-i18n="brandSubtitle">256-Bit Cryptographic Webmail</p>
+      </div>
+
+      <!-- Auth Tabs (Login / Register) -->
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab active" data-i18n="loginTab">Sign In</button>
+        <button id="tabRegister" class="auth-tab" data-i18n="registerTab">Register</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label" data-i18n="emailLabel">Email Address</label>
+          <input type="email" id="loginEmail" class="input-field" placeholder="demo@xmorf.net" data-i18n-placeholder="emailPlaceholder" value="demo@xmorf.net" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="passwordLabel">Password</label>
+          <input type="password" id="loginPassword" class="input-field" placeholder="••••••••••••" data-i18n-placeholder="passwordPlaceholder" value="password" required>
+        </div>
+
+        <!-- Anti-Bot Verification Slider Component -->
+        <div id="loginAntibotContainer"></div>
+
+        <button type="submit" class="btn-primary" data-i18n="loginBtn">Unlock Mailbox</button>
+        <div class="demo-notice" data-i18n="demoAccountNotice">Demo credentials: demo@xmorf.net / password</div>
+      </form>
+
+      <!-- Register Form with Strong Password Meter -->
+      <form id="registerForm" class="hidden">
+        <div class="form-group">
+          <label class="form-label" data-i18n="fullNameLabel">Full Name</label>
+          <input type="text" id="regFullName" class="input-field" placeholder="Alex Mercer" data-i18n-placeholder="fullNamePlaceholder" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="desiredUsername">Desired Address</label>
+          <input type="text" id="regUsername" class="input-field" placeholder="newuser@xmorf.net" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="passwordLabel">Password</label>
+          <input type="password" id="regPassword" class="input-field" placeholder="••••••••••••" data-i18n-placeholder="passwordPlaceholder" required>
+          
+          <!-- Strong Password Meter Component -->
+          <div class="pass-strength-box">
+            <div class="pass-strength-bar">
+              <div id="passStrengthFill" class="pass-strength-fill"></div>
+            </div>
+            <div class="pass-req-list">
+              <div id="reqLength" class="pass-req-item"><span>✖</span> <span data-i18n="passReqLength">Min 8 chars</span></div>
+              <div id="reqUpper" class="pass-req-item"><span>✖</span> <span data-i18n="passReqUpper">Uppercase (A-Z)</span></div>
+              <div id="reqNumber" class="pass-req-item"><span>✖</span> <span data-i18n="passReqNumber">Number (0-9)</span></div>
+              <div id="reqSpecial" class="pass-req-item"><span>✖</span> <span data-i18n="passReqSpecial">Special (!@#$)</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Anti-Bot Verification Slider Component -->
+        <div id="regAntibotContainer"></div>
+
+        <button type="submit" class="btn-primary" data-i18n="registerBtn">Create Encrypted Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MAIN WEBMAIL DASHBOARD / PANEL SCREEN
+       ========================================================================== -->
+  <div id="appDashboard" class="app-container hidden">
+
+    <!-- Top Navigation Bar -->
+    <header class="top-navbar">
+      <a href="#" class="nav-brand">
+        <img src="logo.png" alt="Xmorf Logo" class="nav-logo">
+        <span class="nav-title">Xmorf.net</span>
+      </a>
+
+      <!-- Search Input -->
+      <div class="nav-search">
+        <span class="search-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search mails by subject, sender, content..." data-i18n-placeholder="searchPlaceholder">
+      </div>
+
+      <!-- Nav Actions (Language Selector & User Avatar) -->
+      <div class="nav-actions">
+        <!-- Language Switcher Dropdown Buttons -->
+        <div class="lang-selector">
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="de">DE</button>
+          <button class="lang-btn" data-lang="fr">FR</button>
+          <button class="lang-btn" data-lang="es">ES</button>
+        </div>
+
+        <!-- User Profile Pill -->
+        <div class="user-profile">
+          <div class="user-avatar" id="userAvatar">DU</div>
+          <span class="user-name" id="userName">Demo User</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area (Sidebar + Mail List + Reader Pane) -->
+    <div class="main-content">
+      
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <div>
+          <button id="btnCompose" class="btn-compose">
+            <span class="btn-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+            <span data-i18n="composeBtn">New Encrypted Mail</span>
+          </button>
+
+          <ul class="nav-menu">
+            <li class="nav-item active" data-folder="inbox">
+              <span class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+              </span>
+              <span data-i18n="inbox">Inbox</span>
+              <span id="unreadBadgeCount" class="nav-badge">1</span>
+            </li>
+            <li class="nav-item" data-folder="sent">
+              <span class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </span>
+              <span data-i18n="sent">Sent</span>
+            </li>
+            <li class="nav-item" data-folder="starred">
+              <span class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </span>
+              <span data-i18n="starred">Starred</span>
+            </li>
+            <li class="nav-item" data-folder="trash">
+              <span class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+              </span>
+              <span data-i18n="trash">Trash</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+          <button id="btnLogout" class="btn-logout" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span data-i18n="logout">Sign Out</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Email List Pane -->
+      <section class="email-list-pane">
+        <div class="pane-header">
+          <h2 id="currentFolderName" class="pane-title" data-i18n="inbox">Inbox</h2>
+          <button id="btnEmptyTrash" class="btn-action btn-danger hidden" data-i18n="emptyTrashBtn">Empty Trash</button>
+        </div>
+        <ul id="emailList" class="email-list">
+          <!-- Rendered dynamically via js/app.js -->
+        </ul>
+      </section>
+
+      <!-- Email Detail Reader Pane -->
+      <section id="emailReaderPane" class="email-reader-pane">
+        <!-- Rendered dynamically via js/app.js -->
+        <div class="reader-empty">
+          <div class="reader-empty-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,30,60,0.3)" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <p data-i18n="noEmailsFound">Select an email to view encrypted details.</p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       SECRET ADMIN DASHBOARD PANEL (#xmadmin - Protected via 16-Digit Key)
+       ========================================================================== -->
+  <div id="adminDashboard" class="admin-panel-container hidden">
+
+    <!-- Admin Master Key Lock Screen Overlay -->
+    <div id="adminAuthOverlay" class="admin-auth-overlay">
+      <div class="admin-auth-card">
+        <div class="admin-auth-icon">🔑</div>
+        <h2>Admin Master Security Key Required</h2>
+        <p>Please enter your 16-digit Admin Master Key to unlock the Xmorf Overseer Control Panel.</p>
+        
+        <form id="adminAuthForm">
+          <div class="form-group" style="margin-top: 16px;">
+            <input type="password" id="adminKeyInput" class="input-field" placeholder="1234-5678-9012-3456" style="text-align: center; font-family: monospace; letter-spacing: 2px; font-size: 1.1rem;" required>
+          </div>
+          <button type="submit" class="btn-primary" style="margin-top: 12px;">Unlock Overseer Panel</button>
+        </form>
+        <div style="margin-top: 14px; font-size: 0.8rem; color: var(--text-dim);">
+          Default Key: <code>1234-5678-9012-3456</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Admin Panel Content (Unlocked after Admin Key Auth) -->
+    <div id="adminContent" class="admin-main-content hidden">
+      <div class="admin-header">
+        <div class="admin-title-group">
+          <img src="logo.png" alt="Xmorf Logo" style="height: 44px;">
+          <div>
+            <h1 style="font-size: 1.4rem; font-weight: 800;">Xmorf Command & Security Control Panel</h1>
+            <p style="font-size: 0.84rem; color: var(--text-dim);">Confidential Admin Overseer Panel (#xmadmin)</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <button id="btnDataClear" class="btn-action btn-danger" style="background: rgba(255,30,60,0.25); border-color: rgba(255,30,60,0.6); color: #ff4d6d; font-weight: 700;">
+            🔥 EXECUTE DATA CLEAR
+          </button>
+          <button id="btnExitAdmin" class="btn-action">Exit Admin View</button>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="admin-stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div>
+            <div id="statUsers" class="stat-value">0</div>
+            <div class="stat-label">Total Registered Users</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">🚫</div>
+          <div>
+            <div id="statBannedUsers" class="stat-value">0</div>
+            <div class="stat-label">Banned Accounts</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">📨</div>
+          <div>
+            <div id="statEmails" class="stat-value">0</div>
+            <div class="stat-label">Total System Emails</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">📁</div>
+          <div>
+            <div id="statFiles" class="stat-value">0</div>
+            <div class="stat-label">Uploaded Files Total</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Management Table Card -->
+      <div class="admin-table-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2 class="admin-table-title" style="margin-bottom: 0;"><span>👥</span> User Accounts & Audit Timestamps</h2>
+          <input type="text" id="adminUserSearch" class="search-input" placeholder="Search user by name or email..." style="max-width: 300px; padding: 6px 12px; font-size: 0.85rem;">
+        </div>
+
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>User Account</th>
+              <th>Password</th>
+              <th>Registered At</th>
+              <th>Last Login</th>
+              <th>Last Email Sent</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminUserTableBody">
+            <!-- Rendered dynamically via js/app.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Global Email Inspector Card -->
+      <div class="admin-table-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2 class="admin-table-title" style="margin-bottom: 0;"><span>📨</span> Global Email Database Inspector</h2>
+          <input type="text" id="adminEmailSearch" class="search-input" placeholder="Search emails by subject, sender, recipient..." style="max-width: 320px; padding: 6px 12px; font-size: 0.85rem;">
+        </div>
+
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Sender</th>
+              <th>Recipient</th>
+              <th>Subject</th>
+              <th>Folder</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminEmailTableBody">
+            <!-- Rendered dynamically via js/app.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- File Manager Card & Data Clear Purge -->
+      <div class="admin-table-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2 class="admin-table-title" style="margin-bottom: 0;"><span>📁</span> File Storage Manager & Data Clear</h2>
+          <button id="btnDataClearSecondary" class="btn-action btn-danger" style="font-weight: 700;">
+            🔥 Data Clear (Purge All Files)
+          </button>
+        </div>
+
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Size</th>
+              <th>Uploaded Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminFileTableBody">
+            <!-- Rendered dynamically via js/app.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Live Security Audit Log -->
+      <div class="admin-table-card">
+        <h2 class="admin-table-title"><span>🛡️</span> Security & Anti-Bot Activity Log</h2>
+        <div id="adminSecurityLogs" class="admin-logs-box">
+          <div class="log-line">[SYSTEM INITIATED] Xmorf 16-Digit Master Security Shield online.</div>
+          <div class="log-line">[MAX ATTACHMENT LIMIT] 2 MB per upload limit enforced.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Password Reset Modal for Admin -->
+  <div id="adminPasswordModal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 400px;">
+      <div class="modal-header">
+        <h2 class="modal-title">Change User Password</h2>
+        <button id="btnClosePassModal" class="btn-close-modal">✕</button>
+      </div>
+      <form id="adminPasswordForm" style="margin-top: 16px;">
+        <input type="hidden" id="passResetUserId">
+        <div class="form-group">
+          <label class="form-label">Target User</label>
+          <input type="text" id="passResetTargetEmail" class="input-field" readonly style="opacity: 0.7;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input type="text" id="passResetNewPass" class="input-field" placeholder="Enter new password..." required>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 16px;">
+          <button type="button" id="btnCancelPassModal" class="btn-action">Cancel</button>
+          <button type="submit" class="btn-primary" style="width: auto; padding: 8px 20px;">Save New Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       COMPOSE MAIL MODAL & FILE ATTACHMENTS
+       ========================================================================== -->
+  <div id="composeModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title" data-i18n="composeTitle">New Encrypted Message</h2>
+        <button id="btnCloseModal" class="btn-close-modal">✕</button>
+      </div>
+
+      <form id="composeForm">
+        <div class="form-group">
+          <label class="form-label" data-i18n="recipientLabel">To</label>
+          <input type="text" id="composeRecipient" class="input-field" placeholder="recipient@xmorf.net" data-i18n-placeholder="recipientPlaceholder" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="subjectLabel">Subject</label>
+          <input type="text" id="composeSubject" class="input-field" placeholder="Enter message subject..." data-i18n-placeholder="subjectPlaceholder" required>
+        </div>
+        <div class="form-group">
+          <textarea id="composeBody" class="input-field" rows="6" placeholder="Write your encrypted message here..." data-i18n-placeholder="bodyPlaceholder" style="resize: vertical;"></textarea>
+        </div>
+
+        <!-- Drag & Drop File Upload Zone -->
+        <div id="dropzone" class="dropzone-container">
+          <div class="dropzone-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          </div>
+          <div class="dropzone-text" data-i18n="dragDropText">Drag & drop files here or click to browse</div>
+          <div class="dropzone-subtext">Max file size: 2 MB</div>
+          <input type="file" id="fileInput" multiple style="display: none;">
+        </div>
+
+        <!-- Attached Files Chips Container -->
+        <div id="attachedFilesContainer" class="attached-files-list"></div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 16px;">
+          <button type="button" id="btnCancelCompose" class="btn-action" data-i18n="closeModal">Cancel</button>
+          <button type="submit" class="btn-primary" style="width: auto; padding: 10px 24px;" data-i18n="sendMailBtn">Send Encrypted Mail</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/icons.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/antibot.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
