@@ -371,9 +371,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    emails.forEach(e => {
+    emails.forEach((e, idx) => {
       const li = document.createElement('li');
       li.className = `email-card ${e.isUnread ? 'unread' : ''} ${e.id === window.xmorfStore.selectedEmailId ? 'active' : ''}`;
+      li.style.animationDelay = `${Math.min(idx * 0.04, 0.4)}s`;
       
       const hasAttachment = e.attachments && e.attachments.length > 0;
 
