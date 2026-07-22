@@ -71,6 +71,9 @@ class AntiBotSecurity {
 
     const onMove = (e) => {
       if (!this.isDragging || this.isVerified) return;
+      if (e.type.includes('touch')) {
+        e.preventDefault();
+      }
       const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
       const trackWidth = this.track.offsetWidth || 300;
       const handleWidth = this.handle.offsetWidth || 40;

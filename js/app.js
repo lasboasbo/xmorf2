@@ -318,6 +318,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       await window.xmorfStore.refreshEmailsFromServer();
+      mainContent.classList.remove('mobile-show-reader');
+      sidebar.classList.remove('sidebar-open');
       renderDashboard();
     });
   });
@@ -636,6 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
   btnCancelCompose.addEventListener('click', closeComposeModal);
 
   function openComposeModal(prefill = {}) {
+    sidebar.classList.remove('sidebar-open');
     document.getElementById('composeRecipient').value = prefill.recipient || '';
     document.getElementById('composeSubject').value = prefill.subject || '';
     document.getElementById('composeBody').value = prefill.body || '';
