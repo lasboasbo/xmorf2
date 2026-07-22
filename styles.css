@@ -91,10 +91,136 @@ body {
 
 .landing-hero-wrapper {
   width: 100%;
-  max-width: 900px;
+  max-width: 980px;
   margin: 0 auto;
   padding: 40px 20px;
   animation: modalSpringIn 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Live Security Status Bar */
+.live-security-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 20px;
+  padding: 6px 14px;
+  margin-bottom: 24px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #34d399;
+}
+
+.live-ping-dot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #10b981;
+  animation: checkmarkPop 1.5s infinite alternate;
+}
+
+.live-status-pill {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+  color: white;
+  font-size: 0.72rem;
+}
+
+.landing-brand-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.landing-brand-tag {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+/* Comparison Section & Matrix Table */
+.comparison-section {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.section-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+
+.matrix-table-card {
+  background: rgba(18, 21, 29, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 30, 60, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  overflow-x: auto;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 30, 60, 0.15);
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 600px;
+}
+
+.comparison-table th {
+  padding: 14px 16px;
+  font-size: 0.84rem;
+  color: var(--text-dim);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.comparison-table th.highlight-col {
+  color: var(--primary-red);
+  font-weight: 800;
+  background: rgba(255, 30, 60, 0.1);
+  border-radius: 8px 8px 0 0;
+}
+
+.comparison-table td {
+  padding: 14px 16px;
+  font-size: 0.86rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.comparison-table td.highlight-col {
+  background: rgba(255, 30, 60, 0.06);
+  font-weight: 700;
+}
+
+.check-yes {
+  color: #34d399;
+  font-weight: 700;
+}
+
+.check-partial {
+  color: #fbbf24;
+}
+
+.check-no {
+  color: #f87171;
 }
 
 .landing-brand-header {
