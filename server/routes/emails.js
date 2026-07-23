@@ -80,7 +80,13 @@ function getSmtpTransporter() {
       }
     });
   }
-  return null;
+  // Fallback to local Postfix ESMTP engine on localhost:25
+  return nodemailer.createTransport({
+    host: '127.0.0.1',
+    port: 25,
+    secure: false,
+    tls: { rejectUnauthorized: false }
+  });
 }
 
 // POST compose & send email with persistent DB storage & optional Real SMTP Routing
