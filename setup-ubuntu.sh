@@ -30,31 +30,8 @@ if ! command -v node &> /dev/null; then
     sudo apt-get install -y nodejs || true
 fi
 
-NODE_PATH="$(which node || echo '/usr/bin/node')"
-
-sudo npm install -g pm2 || true
-
-# 2. Setup firewall rules
-echo "🛡️ Configuring Firewall (UFW)..."
-sudo ufw allow 80/tcp || true
-sudo ufw allow 443/tcp || true
-sudo ufw allow 25/tcp || true
-sudo ufw allow 587/tcp || true
-sudo ufw allow 22/tcp || true
-sudo ufw --force enable || true
-
-# 3. Configure Node.js backend environment
-echo "⚙️ Configuring Node.js Backend..."
-cd "${APP_DIR}/server"
-npm install
-
-cat <<EOF > "${APP_DIR}/server/.env"
-PORT=5000
-ADMIN_KEY=${ADMIN_KEY}
-DOMAIN=${DOMAIN}
-SERVER_IP=${SERVER_IP}
-WEBHOOK_SECRET=xmorf_secret_webhook_key
-EOF
+# Ensure /usr/bin/node symlink exists
+sudo ln -sf "${NODE_PATH}" /usr/bin/node || true
 
 # 4. Configure Postfix to pipe incoming mail directly into Node.js Webhook
 echo "📩 Configuring Postfix Mail Pipeline..."
@@ -69,7 +46,8 @@ compatibility_level = 2
 
 smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
 smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
-smtpd_use_tls=yes
+smtpd_tls_security_level = may
+smtpd_tls_protocols = !SSLv2, !SSLv3
 smtpd_tls_session_cache_database = btree:\${data_directory}/smtpd_scache
 smtp_tls_session_cache_database = btree:\${data_directory}/smtp_scache
 
@@ -78,69 +56,30 @@ alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 myorigin = /etc/mailname
 mydestination = ${DOMAIN}, mail.${DOMAIN}, localhost, localhost.localdomain
+local_recipient_maps =
 relayhost = 
 mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
 mailbox_size_limit = 0
 recipient_delimiter = +
 inet_interfaces = all
-inet_protocols = all
+inet_protocols = ipv4
 
 transport_maps = hash:/etc/postfix/transport
 EOF
 
 echo "${DOMAIN} xmorfpipe:" > /etc/postfix/transport
+echo ".${DOMAIN} xmorfpipe:" >> /etc/postfix/transport
 postmap /etc/postfix/transport
 
-# Add master pipe handler to master.cf
-if ! grep -q "xmorfpipe" /etc/postfix/master.cf; then
+# Add master pipe handler to master.cf safely
+sed -i '/xmorfpipe/d' /etc/postfix/master.cf || true
 cat <<EOF >> /etc/postfix/master.cf
 
 xmorfpipe unix - n n - - pipe
-  flags=Fqhu user=nobody argv=${NODE_PATH} ${APP_DIR}/server/scripts/mail-pipe.js
+  flags=Fqhu user=www-data argv=/usr/bin/node ${APP_DIR}/server/scripts/mail-pipe.js \${recipient} \${sender}
 EOF
-fi
 
-# Create mail pipe script
-mkdir -p "${APP_DIR}/server/scripts"
-cat <<'EOF' > "${APP_DIR}/server/scripts/mail-pipe.js"
-const http = require('http');
-
-let rawData = '';
-process.stdin.on('data', chunk => { rawData += chunk; });
-process.stdin.on('end', () => {
-  const lines = rawData.split('\n');
-  let sender = 'external@unknown.com';
-  let recipient = 'demo@xmorf.net';
-  let subject = 'Incoming External Mail';
-
-  for (let line of lines) {
-    if (line.toLowerCase().startsWith('from:')) sender = line.substring(5).trim();
-    if (line.toLowerCase().startsWith('to:')) recipient = line.substring(3).trim();
-    if (line.toLowerCase().startsWith('subject:')) subject = line.substring(8).trim();
-  }
-
-  const payload = JSON.stringify({
-    senderEmail: sender,
-    recipient: recipient,
-    subject: subject,
-    body: rawData.substring(0, 5000),
-    secret: 'xmorf_secret_webhook_key'
-  });
-
-  const req = http.request({
-    hostname: '127.0.0.1',
-    port: 5000,
-    path: '/api/emails/incoming-webhook',
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(payload)
-    }
-  });
-  req.write(payload);
-  req.end();
-});
-EOF
+chmod +x "${APP_DIR}/server/scripts/mail-pipe.js" || true
 
 sudo systemctl restart postfix || true
 

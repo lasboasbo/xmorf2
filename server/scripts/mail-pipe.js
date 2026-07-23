@@ -1,55 +1,58 @@
 const http = require('http');
+const { simpleParser } = require('mailparser');
 
-let rawData = '';
-process.stdin.on('data', chunk => { rawData += chunk; });
-process.stdin.on('end', () => {
+let chunks = [];
+process.stdin.on('data', chunk => { chunks.push(chunk); });
+process.stdin.on('end', async () => {
   try {
-    const lines = rawData.split(/\r?\n/);
-    let sender = 'external@unknown.com';
-    let recipient = 'demo@xmorf.net';
-    let subject = 'Incoming External Mail';
-    let bodyLines = [];
-    let isBody = false;
+    const rawBuffer = Buffer.concat(chunks);
+    let parsed = {};
+    try {
+      parsed = await simpleParser(rawBuffer);
+    } catch (parseErr) {
+      console.error('mailparser error, falling back to basic extraction:', parseErr.message);
+    }
 
-    for (let line of lines) {
-      if (!isBody) {
-        if (line.toLowerCase().startsWith('from:')) {
-          const match = line.match(/<([^>]+)>/);
-          sender = match ? match[1] : line.substring(5).trim();
+    let argRecipient = process.argv[2];
+    let argSender = process.argv[3];
+
+    let parsedRecipient = (parsed.to && parsed.to.value && parsed.to.value[0] ? parsed.to.value[0].address : null);
+    let parsedSender = (parsed.from && parsed.from.value && parsed.from.value[0] ? parsed.from.value[0].address : null);
+    let parsedSenderName = (parsed.from && parsed.from.value && parsed.from.value[0] && parsed.from.value[0].name) ? parsed.from.value[0].name : null;
+
+    let recipient = (argRecipient || parsedRecipient || 'demo@xmorf.net').replace(/^<|>$/g, '').trim().toLowerCase();
+    let sender = (argSender || parsedSender || 'external@unknown.com').replace(/^<|>$/g, '').trim().toLowerCase();
+    let senderName = parsedSenderName || (sender.includes('@') ? sender.split('@')[0] : sender);
+
+    const subject = parsed.subject || '(No Subject)';
+    let body = parsed.text || parsed.html || rawBuffer.toString('utf8').substring(0, 5000);
+
+    const attachments = [];
+    if (parsed.attachments && parsed.attachments.length > 0) {
+      for (const att of parsed.attachments) {
+        if (att.content) {
+          attachments.push({
+            name: att.filename || 'attachment',
+            size: att.size || att.content.length,
+            content: att.content.toString('base64')
+          });
         }
-        if (line.toLowerCase().startsWith('to:')) {
-          const match = line.match(/<([^>]+)>/);
-          recipient = match ? match[1] : line.substring(3).trim();
-        }
-        if (line.toLowerCase().startsWith('subject:')) {
-          subject = line.substring(8).trim();
-        }
-        if (line.trim() === '') {
-          isBody = true;
-        }
-      } else {
-        bodyLines.push(line);
       }
     }
 
-    // Clean recipient email address
-    recipient = recipient.replace(/^[^<]*</, '').replace(/>.*$/, '').trim();
-
-    let fullBody = bodyLines.join('\n').trim();
-    if (!fullBody) fullBody = rawData.substring(0, 3000);
-
     const payload = JSON.stringify({
       senderEmail: sender,
-      senderName: sender.split('@')[0],
+      senderName: senderName,
       recipient: recipient,
-      subject: subject || 'Incoming Mail',
-      body: fullBody.substring(0, 8000),
-      secret: 'xmorf_secret_webhook_key'
+      subject: subject,
+      body: body,
+      attachments: attachments,
+      secret: process.env.WEBHOOK_SECRET || 'xmorf_secret_webhook_key'
     });
 
     const req = http.request({
       hostname: '127.0.0.1',
-      port: 5000,
+      port: process.env.PORT || 5000,
       path: '/api/emails/incoming-webhook',
       method: 'POST',
       headers: {
@@ -59,12 +62,13 @@ process.stdin.on('end', () => {
     });
 
     req.on('error', (e) => {
-      console.error('Mail pipe webhook request error:', e);
+      console.error('Mail pipe webhook request error:', e.message);
     });
 
     req.write(payload);
     req.end();
   } catch (err) {
-    console.error('Mail pipe parsing error:', err);
+    console.error('Mail pipe overall error:', err);
   }
 });
+

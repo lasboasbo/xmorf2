@@ -3,12 +3,19 @@
 set -e
 
 echo "🔧 Repairing Postfix configuration and updating Xmorf..."
-rm -f /var/www/xmorf/server/scripts/mail-pipe.js
-sed -i '/xmorfpipe flags=/d' /etc/postfix/master.cf || true
 
 cd /var/www/xmorf
-git pull
-bash setup-ubuntu.sh xmorf.net 217.160.188.228
+git pull origin main || git pull
+chmod +x setup-ubuntu.sh
+chmod +x server/scripts/mail-pipe.js
+
+bash setup-ubuntu.sh xmorf.net 217.160.188.228 7449-74491-74492-74493
+
+echo "✅ Restarting Node.js Backend with PM2..."
+cd /var/www/xmorf/server
+npm install
+pm2 restart xmorf-backend || pm2 start server.js --name "xmorf-backend"
 
 echo "✅ Postfix status:"
 systemctl status postfix --no-pager
+

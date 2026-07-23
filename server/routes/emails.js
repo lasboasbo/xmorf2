@@ -217,21 +217,67 @@ router.post('/incoming-webhook', (req, res) => {
   const cleanRecipient = recipient.toLowerCase().trim();
   const db = readDB();
 
+  // Check if a registered user exists for this recipient
+  const targetUser = (db.users || []).find(u => (u.email || '').toLowerCase().trim() === cleanRecipient);
+  // Catch-all: if recipient user doesn't exist, deliver to demo@xmorf.net so external emails are never lost
+  const ownerEmail = targetUser ? cleanRecipient : (cleanRecipient.endsWith('@xmorf.net') ? 'demo@xmorf.net' : cleanRecipient);
+
+  // Process attachments if raw base64 content is sent from mail-pipe
+  const processedAttachments = (attachments || []).map(att => {
+    if (att.content && typeof att.content === 'string') {
+      try {
+        const uniqueFilename = Date.now() + '-' + Math.round(Math.random() * 1e9) + '-' + (att.name || 'file');
+        const uploadDir = path.join(__dirname, '../uploads');
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        const filePath = path.join(uploadDir, uniqueFilename);
+        fs.writeFileSync(filePath, Buffer.from(att.content, 'base64'));
+
+        const formatSize = (bytes) => {
+          if (!bytes) return '0 B';
+          if (bytes < 1024) return bytes + ' B';
+          if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+          return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        };
+
+        const fileExt = path.extname(att.name || '').toLowerCase().replace('.', '');
+        let fileType = 'document';
+        if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(fileExt)) fileType = 'image';
+        if (fileExt === 'pdf') fileType = 'pdf';
+        if (['zip', 'rar', '7z', 'tar', 'gz'].includes(fileExt)) fileType = 'archive';
+
+        return {
+          id: 'att-' + Date.now() + '-' + Math.round(Math.random() * 1000),
+          name: att.name || 'attachment',
+          size: formatSize(att.size || 0),
+          type: fileType,
+          filename: uniqueFilename,
+          url: `/api/uploads/${uniqueFilename}`
+        };
+      } catch (err) {
+        console.error('Failed to save incoming attachment:', err);
+        return null;
+      }
+    }
+    return att;
+  }).filter(Boolean);
+
   const inboxEmail = {
     id: 'em-real-inbox-' + Date.now(),
-    ownerEmail: cleanRecipient,
+    ownerEmail: ownerEmail,
     folder: 'inbox',
     senderName: senderName || senderEmail || 'External Sender',
     senderEmail: senderEmail || 'unknown@external.com',
     recipient: cleanRecipient,
     subject: subject,
-    preview: body ? body.substring(0, 90) + '...' : 'No content',
+    preview: body ? body.substring(0, 90).replace(/[\r\n]+/g, ' ') + '...' : 'No content',
     body: body || '',
     timestamp: 'Just now',
     date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     isUnread: true,
     isStarred: false,
-    attachments: attachments
+    attachments: processedAttachments
   };
 
   db.emails.unshift(inboxEmail);
@@ -239,7 +285,7 @@ router.post('/incoming-webhook', (req, res) => {
 
   res.json({
     success: true,
-    message: `Incoming email for ${cleanRecipient} processed and delivered to Xmorf inbox!`,
+    message: `Incoming email for ${cleanRecipient} processed and delivered to ${ownerEmail}!`,
     emailId: inboxEmail.id
   });
 });
