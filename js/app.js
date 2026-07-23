@@ -543,6 +543,97 @@ function escapeAttr(str) {
   return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
 
+window.addEventListener('message', (event) => {
+  if (!event.data) return;
+  if ((event.data.type === 'XMORF_RESIZE' || event.data.type === 'XMORF_IFRAME_RESIZE') && event.data.height) {
+    const iframe = document.querySelector('.html-email-iframe');
+    if (iframe) {
+      const calculatedHeight = Math.max(450, event.data.height + 40);
+      iframe.style.height = calculatedHeight + 'px';
+    }
+  }
+  if ((event.data.type === 'XMORF_WHEEL' || event.data.type === 'XMORF_IFRAME_WHEEL') && event.data.deltaY) {
+    const pane = document.querySelector('.email-reader-pane');
+    if (pane) {
+      pane.scrollTop += event.data.deltaY;
+    }
+  }
+});
+
+// Initialize Anti-Bot Verification widgets
+function initAntiBotWidgets() {
+  loginAntiBot = new window.AntiBotSecurity('loginAntibotContainer', () => {
+    showToast('Human verification complete! You can now sign in.');
+  });
+
+  regAntiBot = new window.AntiBotSecurity('regAntibotContainer', () => {
+    showToast('Human verification complete!');
+  });
+}
+
+initAntiBotWidgets();
+window.i18n.updateDOM();
+
+// View Switchers between Landing Info Page and Auth Card View
+const landingView = document.getElementById('landingView');
+const authCardView = document.getElementById('authCardView');
+const btnGetStarted = document.getElementById('btnGetStarted');
+const btnHeroRegister = document.getElementById('btnHeroRegister');
+const btnBackToHome = document.getElementById('btnBackToHome');
+
+if (btnGetStarted) {
+  btnGetStarted.addEventListener('click', () => {
+    landingView.classList.add('hidden');
+    authCardView.classList.remove('hidden');
+  });
+}
+if (btnHeroRegister) {
+  btnHeroRegister.addEventListener('click', () => {
+    landingView.classList.add('hidden');
+    authCardView.classList.remove('hidden');
+    document.querySelector('[data-tab="register"]')?.click();
+  });
+}
+if (btnBackToHome) {
+  btnBackToHome.addEventListener('click', () => {
+    authCardView.classList.add('hidden');
+    landingView.classList.remove('hidden');
+  });
+}
+
+// Handle Tab Switching (Login / Register / Recover)
+const tabBtns = document.querySelectorAll('.tab-btn');
+const authForms = document.querySelectorAll('.auth-form');
+
+tabBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const targetTab = btn.getAttribute('data-tab');
+    tabBtns.forEach(b => b.classList.remove('active'));
+    authForms.forEach(f => f.classList.add('hidden'));
+
+    btn.classList.add('active');
+    const targetForm = document.getElementById(`${targetTab}Form`);
+    if (targetForm) {
+      targetForm.classList.remove('hidden');
+    }
+  });
+});
+
+// Password Visibility Toggle
+document.querySelectorAll('.toggle-password').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const input = btn.parentElement.querySelector('input');
+    if (!input) return;
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.style.opacity = '1';
+    } else {
+      input.type = 'password';
+      btn.style.opacity = '0.5';
+    }
+  });
+});
+
   // Render Email Reader Pane
   function renderEmailReader() {
     const selectedId = window.xmorfStore.selectedEmailId;
@@ -592,7 +683,6 @@ function escapeAttr(str) {
     }
 
     let cleanBody = decodeHtmlEntities(email.bodyHtml || email.body || '');
-    // If double entity encoded, decode once more
     if (/&lt;[a-z\/\!]/i.test(cleanBody)) {
       cleanBody = decodeHtmlEntities(cleanBody);
     }
@@ -601,15 +691,13 @@ function escapeAttr(str) {
     let emailBodyContent = '';
     if (isHtmlEmail) {
       const overrideStyle = `
-        <style>
-          html, body, div, table, tbody, tr, td, section, article, main {
+        <style id="xmorfOverrideStyle">
+          html, body {
             height: auto !important;
             max-height: none !important;
             min-height: 0 !important;
             overflow: visible !important;
             overflow-y: visible !important;
-          }
-          html, body {
             margin: 0 !important;
             padding: 16px !important;
             background: #ffffff !important;
@@ -617,8 +705,13 @@ function escapeAttr(str) {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
             line-height: 1.6 !important;
             word-break: break-word !important;
+            box-sizing: border-box !important;
           }
-          img {
+          div, table, tbody, tr, td, section, article, main, header, footer, p, span {
+            max-height: none !important;
+            box-sizing: border-box !important;
+          }
+          img, svg, video, canvas {
             max-width: 100% !important;
             height: auto !important;
             display: inline-block !important;
@@ -626,76 +719,114 @@ function escapeAttr(str) {
           a {
             color: #2563eb !important;
           }
+          table {
+            max-width: 100% !important;
+          }
         </style>
       `;
 
-      let iframeContent = cleanBody;
-      if (/<head>/i.test(iframeContent)) {
-        iframeContent = iframeContent.replace(/<head>/i, `<head><base target="_blank">${overrideStyle}`);
-      } else {
-        iframeContent = `<meta charset="utf-8"><base target="_blank">${overrideStyle}${cleanBody}`;
-      }
-
       const autoResizeScript = `
         <script>
-          function pushHeight() {
-            try {
-              var h = Math.max(
-                document.body ? document.body.scrollHeight : 0,
-                document.documentElement ? document.documentElement.scrollHeight : 0,
-                450
-              );
-              window.parent.postMessage({ type: 'XMORF_RESIZE', height: h }, '*');
-            } catch(e){}
-          }
-          window.addEventListener('load', pushHeight);
-          window.addEventListener('resize', pushHeight);
-          document.addEventListener('DOMContentLoaded', pushHeight);
-          setTimeout(pushHeight, 200);
-          setTimeout(pushHeight, 600);
-          setTimeout(pushHeight, 1500);
-          setInterval(pushHeight, 1000);
-
-          window.addEventListener('wheel', function(e) {
-            try {
-              window.parent.postMessage({ type: 'XMORF_WHEEL', deltaY: e.deltaY }, '*');
-            } catch(e){}
-          }, { passive: true });
-
-          var lastTouchY = 0;
-          window.addEventListener('touchstart', function(e) {
-            if (e.touches && e.touches[0]) {
-              lastTouchY = e.touches[0].clientY;
+          (function() {
+            function getRealHeight() {
+              try {
+                var b = document.body;
+                var e = document.documentElement;
+                var maxH = 0;
+                if (b) {
+                  maxH = Math.max(b.scrollHeight, b.offsetHeight, b.clientHeight);
+                  var children = b.children;
+                  for (var i = 0; i < children.length; i++) {
+                    var rect = children[i].getBoundingClientRect();
+                    if (rect.bottom > maxH) maxH = rect.bottom;
+                  }
+                }
+                if (e) {
+                  maxH = Math.max(maxH, e.scrollHeight, e.offsetHeight);
+                }
+                return Math.max(Math.ceil(maxH), 350);
+              } catch(err) {
+                return 500;
+              }
             }
-          }, { passive: true });
 
-          window.addEventListener('touchmove', function(e) {
+            function pushHeight() {
+              try {
+                var h = getRealHeight();
+                window.parent.postMessage({ type: 'XMORF_RESIZE', height: h }, '*');
+              } catch(e){}
+            }
+
+            window.addEventListener('load', pushHeight);
+            window.addEventListener('resize', pushHeight);
+            document.addEventListener('DOMContentLoaded', pushHeight);
+            [100, 300, 600, 1200, 2500, 5000].forEach(function(delay) {
+              setTimeout(pushHeight, delay);
+            });
+            setInterval(pushHeight, 1500);
+
             try {
-              if (e.touches && e.touches[0]) {
-                var touchY = e.touches[0].clientY;
-                var deltaY = lastTouchY - touchY;
-                lastTouchY = touchY;
-                window.parent.postMessage({ type: 'XMORF_WHEEL', deltaY: deltaY }, '*');
+              if (window.ResizeObserver && document.body) {
+                var ro = new ResizeObserver(pushHeight);
+                ro.observe(document.body);
               }
             } catch(e){}
-          }, { passive: true });
+
+            window.addEventListener('wheel', function(e) {
+              try {
+                window.parent.postMessage({ type: 'XMORF_WHEEL', deltaY: e.deltaY }, '*');
+              } catch(e){}
+            }, { passive: true });
+
+            var lastTouchY = 0;
+            window.addEventListener('touchstart', function(e) {
+              if (e.touches && e.touches[0]) {
+                lastTouchY = e.touches[0].clientY;
+              }
+            }, { passive: true });
+
+            window.addEventListener('touchmove', function(e) {
+              try {
+                if (e.touches && e.touches[0]) {
+                  var touchY = e.touches[0].clientY;
+                  var deltaY = lastTouchY - touchY;
+                  lastTouchY = touchY;
+                  window.parent.postMessage({ type: 'XMORF_WHEEL', deltaY: deltaY }, '*');
+                }
+              } catch(e){}
+            }, { passive: true });
+          })();
         </script>
       `;
 
-      if (/<\/body>/i.test(iframeContent)) {
-        iframeContent = iframeContent.replace(/<\/body>/i, `${autoResizeScript}</body>`);
+      let iframeContent = cleanBody;
+
+      if (/<\/head>/i.test(iframeContent)) {
+        iframeContent = iframeContent.replace(/<\/head>/i, `${overrideStyle}</head>`);
+      } else if (/<head>/i.test(iframeContent)) {
+        iframeContent = iframeContent.replace(/<head>/i, `<head><base target="_blank">${overrideStyle}`);
       } else {
-        iframeContent += autoResizeScript;
+        iframeContent = `<meta charset="utf-8"><base target="_blank">${overrideStyle}${iframeContent}`;
+      }
+
+      if (!/<base /i.test(iframeContent)) {
+        iframeContent = iframeContent.replace(/<meta[^>]*>/i, `$&<base target="_blank">`);
+      }
+
+      if (/<\/body>/i.test(iframeContent)) {
+        iframeContent = iframeContent.replace(/<\/body>/i, `${overrideStyle}${autoResizeScript}</body>`);
+      } else {
+        iframeContent += `${overrideStyle}${autoResizeScript}`;
       }
 
       emailBodyContent = `
         <div class="html-email-wrapper" style="margin: 16px 24px 32px 24px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; background: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-          <iframe class="html-email-iframe" sandbox="allow-popups allow-same-origin allow-scripts" srcdoc="${escapeAttr(iframeContent)}" style="width: 100%; min-height: 500px; height: 500px; border: none; background: #ffffff; display: block;" onload="try { const h = Math.max(this.contentWindow.document.body.scrollHeight, 450); this.style.height = (h + 40) + 'px'; } catch(e){}"></iframe>
+          <iframe class="html-email-iframe" sandbox="allow-popups allow-same-origin allow-scripts" srcdoc="${escapeAttr(iframeContent)}" style="width: 100%; min-height: 450px; height: 500px; border: none; background: #ffffff; display: block; overflow-y: auto !important;" onload="try { const h = Math.max(this.contentWindow.document.body.scrollHeight, 450); this.style.height = (h + 40) + 'px'; } catch(e){}"></iframe>
         </div>
       `;
     } else {
       emailBodyContent = `
-        <div class="reader-body" style="margin: 16px 24px 32px 24px; padding: 28px 32px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; white-space: pre-wrap; font-family: inherit; line-height: 1.7; color: #e2e8f0;">${escapeHtml(cleanBody)}</div>
+        <div class="reader-body" style="margin: 16px 24px 32px 24px; padding: 28px 32px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; white-space: pre-wrap; font-family: inherit; line-height: 1.7; color: #e2e8f0; overflow-y: auto;">${escapeHtml(cleanBody)}</div>
       `;
     }
 
