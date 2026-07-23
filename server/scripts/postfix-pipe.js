@@ -25,7 +25,7 @@ process.stdin.on('end', async () => {
       : senderEmail.split('@')[0];
 
     let recipient = process.argv[2] || (parsed.to && parsed.to.value && parsed.to.value[0] ? parsed.to.value[0].address : 'demo@xmorf.net');
-    recipient = recipient.toLowerCase().trim();
+    recipient = recipient.replace(/^<|>$/g, '').toLowerCase().trim();
 
     const subject = parsed.subject || '(No Subject)';
     const body = parsed.text || parsed.html || 'No content';
