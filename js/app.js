@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if ((event.data.type === 'XMORF_RESIZE' || event.data.type === 'XMORF_IFRAME_RESIZE') && event.data.height) {
       const iframe = document.querySelector('.html-email-iframe');
       if (iframe) {
-        iframe.style.height = Math.max(500, event.data.height + 60) + 'px';
+        iframe.style.height = Math.max(450, event.data.height + 40) + 'px';
       }
     }
     if ((event.data.type === 'XMORF_WHEEL' || event.data.type === 'XMORF_IFRAME_WHEEL') && event.data.deltaY) {
@@ -542,97 +542,6 @@ function escapeAttr(str) {
   if (!str) return '';
   return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
-
-window.addEventListener('message', (event) => {
-  if (!event.data) return;
-  if ((event.data.type === 'XMORF_RESIZE' || event.data.type === 'XMORF_IFRAME_RESIZE') && event.data.height) {
-    const iframe = document.querySelector('.html-email-iframe');
-    if (iframe) {
-      const calculatedHeight = Math.max(450, event.data.height + 40);
-      iframe.style.height = calculatedHeight + 'px';
-    }
-  }
-  if ((event.data.type === 'XMORF_WHEEL' || event.data.type === 'XMORF_IFRAME_WHEEL') && event.data.deltaY) {
-    const pane = document.querySelector('.email-reader-pane');
-    if (pane) {
-      pane.scrollTop += event.data.deltaY;
-    }
-  }
-});
-
-// Initialize Anti-Bot Verification widgets
-function initAntiBotWidgets() {
-  loginAntiBot = new window.AntiBotSecurity('loginAntibotContainer', () => {
-    showToast('Human verification complete! You can now sign in.');
-  });
-
-  regAntiBot = new window.AntiBotSecurity('regAntibotContainer', () => {
-    showToast('Human verification complete!');
-  });
-}
-
-initAntiBotWidgets();
-window.i18n.updateDOM();
-
-// View Switchers between Landing Info Page and Auth Card View
-const landingView = document.getElementById('landingView');
-const authCardView = document.getElementById('authCardView');
-const btnGetStarted = document.getElementById('btnGetStarted');
-const btnHeroRegister = document.getElementById('btnHeroRegister');
-const btnBackToHome = document.getElementById('btnBackToHome');
-
-if (btnGetStarted) {
-  btnGetStarted.addEventListener('click', () => {
-    landingView.classList.add('hidden');
-    authCardView.classList.remove('hidden');
-  });
-}
-if (btnHeroRegister) {
-  btnHeroRegister.addEventListener('click', () => {
-    landingView.classList.add('hidden');
-    authCardView.classList.remove('hidden');
-    document.querySelector('[data-tab="register"]')?.click();
-  });
-}
-if (btnBackToHome) {
-  btnBackToHome.addEventListener('click', () => {
-    authCardView.classList.add('hidden');
-    landingView.classList.remove('hidden');
-  });
-}
-
-// Handle Tab Switching (Login / Register / Recover)
-const tabBtns = document.querySelectorAll('.tab-btn');
-const authForms = document.querySelectorAll('.auth-form');
-
-tabBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const targetTab = btn.getAttribute('data-tab');
-    tabBtns.forEach(b => b.classList.remove('active'));
-    authForms.forEach(f => f.classList.add('hidden'));
-
-    btn.classList.add('active');
-    const targetForm = document.getElementById(`${targetTab}Form`);
-    if (targetForm) {
-      targetForm.classList.remove('hidden');
-    }
-  });
-});
-
-// Password Visibility Toggle
-document.querySelectorAll('.toggle-password').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const input = btn.parentElement.querySelector('input');
-    if (!input) return;
-    if (input.type === 'password') {
-      input.type = 'text';
-      btn.style.opacity = '1';
-    } else {
-      input.type = 'password';
-      btn.style.opacity = '0.5';
-    }
-  });
-});
 
   // Render Email Reader Pane
   function renderEmailReader() {
