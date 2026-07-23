@@ -30,6 +30,8 @@ if ! command -v node &> /dev/null; then
     sudo apt-get install -y nodejs || true
 fi
 
+NODE_PATH="$(command -v node || echo '/usr/bin/node')"
+
 # Ensure /usr/bin/node symlink exists
 sudo ln -sf "${NODE_PATH}" /usr/bin/node || true
 
