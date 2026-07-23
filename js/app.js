@@ -559,6 +559,13 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }
 
+    const rawBody = email.bodyHtml || email.body || '';
+    const isHtmlEmail = /<[a-z][\s\S]*>/i.test(rawBody);
+
+    const emailBodyContent = isHtmlEmail
+      ? `<div class="html-email-container" style="margin-top: 16px; padding: 20px; background: #ffffff; color: #111111; border-radius: 8px; overflow-x: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">${rawBody}</div>`
+      : `<div class="reader-body" style="margin-top: 16px; white-space: pre-wrap; font-family: inherit; line-height: 1.6;">${escapeHtml(rawBody)}</div>`;
+
     emailReaderPane.innerHTML = `
       <button id="btnMobileBack" class="mobile-back-btn">
         ← Back to Mail List
@@ -601,7 +608,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
 
-      <div class="reader-body">${escapeHtml(email.body)}</div>
+      ${emailBodyContent}
 
       ${attachmentsHtml}
     `;

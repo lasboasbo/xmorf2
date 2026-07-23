@@ -2,6 +2,7 @@
 import sys
 import json
 import re
+import base64
 import urllib.request
 from email import message_from_bytes
 from email.policy import default
@@ -22,34 +23,56 @@ def main():
 
         recipient = extract_email(raw_recipient)
         sender = extract_email(raw_sender)
-        subject = parsed.get('Subject') or '(No Subject)'
-        sender_name = parsed.get('From') or sender
+        subject = str(parsed.get('Subject') or '(No Subject)')
+        sender_name = str(parsed.get('From') or sender)
 
-        body = ''
+        text_body = ''
+        html_body = ''
+        attachments = []
+
         try:
             if parsed.is_multipart():
                 for part in parsed.walk():
                     content_type = part.get_content_type()
-                    content_disposition = str(part.get('Content-Disposition'))
-                    if content_type == 'text/plain' and 'attachment' not in content_disposition:
-                        body = part.get_content()
-                        break
-                    elif content_type == 'text/html' and not body and 'attachment' not in content_disposition:
-                        body = part.get_content()
-            else:
-                body = parsed.get_content()
-        except Exception:
-            body = raw_data.decode('utf-8', errors='ignore')[:5000]
+                    content_disposition = str(part.get('Content-Disposition') or '')
+                    filename = part.get_filename()
 
-        if not body:
-            body = raw_data.decode('utf-8', errors='ignore')[:5000]
+                    if filename or 'attachment' in content_disposition:
+                        payload = part.get_payload(decode=True)
+                        if payload:
+                            attachments.append({
+                                'name': filename or 'attachment',
+                                'contentType': content_type,
+                                'size': len(payload),
+                                'content': base64.b64encode(payload).decode('utf-8')
+                            })
+                    else:
+                        if content_type == 'text/html' and not html_body:
+                            html_body = part.get_content()
+                        elif content_type == 'text/plain' and not text_body:
+                            text_body = part.get_content()
+            else:
+                content_type = parsed.get_content_type()
+                if content_type == 'text/html':
+                    html_body = parsed.get_content()
+                else:
+                    text_body = parsed.get_content()
+        except Exception:
+            text_body = raw_data.decode('utf-8', errors='ignore')[:10000]
+
+        final_body = html_body if html_body else text_body
+        if not final_body:
+            final_body = raw_data.decode('utf-8', errors='ignore')[:10000]
 
         payload = json.dumps({
             'senderEmail': str(sender),
             'senderName': str(sender_name),
             'recipient': str(recipient),
             'subject': str(subject),
-            'body': str(body),
+            'body': str(final_body),
+            'bodyHtml': str(html_body) if html_body else '',
+            'bodyText': str(text_body) if text_body else '',
+            'attachments': attachments,
             'secret': 'xmorf_secret_webhook_key'
         }).encode('utf-8')
 

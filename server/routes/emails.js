@@ -232,7 +232,7 @@ router.post('/send', (req, res) => {
 
 // POST /api/emails/incoming-webhook - Process incoming real emails (from Postfix/SendGrid/IONOS Catchall)
 router.post('/incoming-webhook', (req, res) => {
-  const { senderEmail, senderName, recipient, subject, body, attachments = [], secret } = req.body;
+  const { senderEmail, senderName, recipient, subject, body, bodyHtml, bodyText, attachments = [], secret } = req.body;
 
   if (process.env.WEBHOOK_SECRET && secret !== process.env.WEBHOOK_SECRET) {
     return res.status(401).json({ success: false, message: 'Invalid webhook secret' });
@@ -293,17 +293,21 @@ router.post('/incoming-webhook', (req, res) => {
   }).filter(Boolean);
 
   const germanDateStr = getGermanFormattedDate();
+  const rawContent = bodyHtml || body || bodyText || '';
+  const previewText = rawContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
   const inboxEmail = {
     id: 'em-real-inbox-' + Date.now(),
     ownerEmail: ownerEmail,
     folder: 'inbox',
     senderName: senderName || senderEmail || 'External Sender',
-    senderEmail: senderEmail || 'unknown@external.com',
+    senderEmail: cleanSender || 'unknown@external.com',
     recipient: cleanRecipient,
     subject: subject,
-    preview: body ? body.substring(0, 90).replace(/[\r\n]+/g, ' ') + '...' : 'No content',
-    body: body || '',
+    preview: previewText ? previewText.substring(0, 90) + '...' : 'No content',
+    body: rawContent,
+    bodyHtml: bodyHtml || '',
+    bodyText: bodyText || '',
     formattedDate: germanDateStr,
     timestamp: germanDateStr,
     date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
