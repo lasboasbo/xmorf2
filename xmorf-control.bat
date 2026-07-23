@@ -35,21 +35,21 @@ exit /b
 
 :CMD_ONLINE
 echo.
-echo Connecting to VPS and starting Xmorf Webmail...
-node -e "const { Client } = require('./server/node_modules/ssh2'); const c = new Client(); c.on('ready', () => { c.exec('pm2 start xmorf-backend && systemctl start nginx', (err, s) => { s.on('close', () => { console.log('\nSUCCESS: XMORF.NET IS NOW ONLINE! (https://xmorf.net)\n'); c.end(); process.exit(0); }); s.on('data', (d) => process.stdout.write(d.toString())); }); }).connect({ host: '217.160.188.228', username: 'root', password: '225weG39uCYKgfKM' });"
+echo Connecting to VPS and starting Xmorf Webmail (fixing 502 Bad Gateway if needed)...
+node -e "const { Client } = require('./server/node_modules/ssh2'); const c = new Client(); c.on('ready', () => { c.exec('cd /var/www/xmorf/server && (pm2 restart xmorf-backend || pm2 start server.js --name xmorf-backend) && pm2 save && systemctl restart nginx', (err, s) => { s.on('close', () => { console.log('\nSUCCESS: XMORF.NET IS NOW ONLINE! (https://xmorf.net)\n'); c.end(); process.exit(0); }); s.on('data', (d) => process.stdout.write(d.toString())); s.stderr.on('data', (d) => process.stderr.write(d.toString())); }); }).connect({ host: '217.160.188.228', username: 'root', password: '225weG39uCYKgfKM' });"
 pause
 exit /b
 
 :CMD_OFFLINE
 echo.
 echo Connecting to VPS and stopping Xmorf Webmail...
-node -e "const { Client } = require('./server/node_modules/ssh2'); const c = new Client(); c.on('ready', () => { c.exec('pm2 stop xmorf-backend && systemctl stop nginx', (err, s) => { s.on('close', () => { console.log('\nSUCCESS: XMORF.NET IS NOW OFFLINE!\n'); c.end(); process.exit(0); }); s.on('data', (d) => process.stdout.write(d.toString())); }); }).connect({ host: '217.160.188.228', username: 'root', password: '225weG39uCYKgfKM' });"
+node -e "const { Client } = require('./server/node_modules/ssh2'); const c = new Client(); c.on('ready', () => { c.exec('pm2 stop xmorf-backend; systemctl stop nginx', (err, s) => { s.on('close', () => { console.log('\nSUCCESS: XMORF.NET IS NOW OFFLINE!\n'); c.end(); process.exit(0); }); s.on('data', (d) => process.stdout.write(d.toString())); s.stderr.on('data', (d) => process.stderr.write(d.toString())); }); }).connect({ host: '217.160.188.228', username: 'root', password: '225weG39uCYKgfKM' });"
 pause
 exit /b
 
 :CMD_STATUS
 echo.
 echo Checking live VPS status...
-node -e "const { Client } = require('./server/node_modules/ssh2'); const c = new Client(); c.on('ready', () => { c.exec('pm2 status xmorf-backend --no-color', (err, s) => { s.on('close', () => { c.end(); process.exit(0); }); s.on('data', (d) => process.stdout.write(d.toString())); }); }).connect({ host: '217.160.188.228', username: 'root', password: '225weG39uCYKgfKM' });"
+node -e "const { Client } = require('./server/node_modules/ssh2'); const c = new Client(); c.on('ready', () => { c.exec('pm2 status; systemctl status nginx --no-pager', (err, s) => { s.on('close', () => { c.end(); process.exit(0); }); s.on('data', (d) => process.stdout.write(d.toString())); s.stderr.on('data', (d) => process.stderr.write(d.toString())); }); }).connect({ host: '217.160.188.228', username: 'root', password: '225weG39uCYKgfKM' });"
 pause
 exit /b

@@ -561,16 +561,22 @@ function renderHtmlEmailInShadowDom(hostElement, htmlContent) {
         line-height: 1.6;
         word-break: break-word;
         overflow-x: auto;
+        touch-action: pan-y !important;
+        -webkit-overflow-scrolling: touch !important;
       }
       @media (max-width: 768px) {
         :host {
-          margin: 10px 4px 24px 4px !important;
-          padding: 16px 12px !important;
+          margin: 10px 0px 32px 0px !important;
+          padding: 16px 10px !important;
+          border-radius: 10px !important;
+          width: 100% !important;
+          box-sizing: border-box !important;
         }
       }
       * {
         box-sizing: border-box !important;
         max-height: none !important;
+        touch-action: pan-y !important;
       }
       img, svg, video, canvas {
         max-width: 100% !important;
@@ -579,6 +585,9 @@ function renderHtmlEmailInShadowDom(hostElement, htmlContent) {
       }
       table {
         max-width: 100% !important;
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
       }
       a {
         color: #2563eb !important;
