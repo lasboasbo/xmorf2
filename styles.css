@@ -2158,40 +2158,11 @@ body {
 
 @media (max-width: 768px) {
   .mobile-menu-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    touch-action: manipulation;
-    flex-shrink: 0;
-  }
-
-  .mobile-menu-toggle:active {
-    background: rgba(255, 30, 60, 0.25);
+    display: none !important;
   }
 
   .mobile-back-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255, 30, 60, 0.1);
-    border: 1px solid rgba(255, 30, 60, 0.28);
-    color: white;
-    padding: 8px 14px;
-    border-radius: 18px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 12px;
-    touch-action: manipulation;
-  }
-
-  .mobile-back-btn:active {
-    transform: scale(0.96);
+    display: none !important;
   }
 
   .top-navbar {
@@ -2207,25 +2178,25 @@ body {
   }
 
   .nav-logo {
-    height: 30px;
+    height: 32px;
   }
 
   .nav-search {
-    margin: 0 2px;
+    margin: 0 4px;
     flex: 1;
     min-width: 0;
-    max-width: 170px;
+    max-width: 220px;
   }
 
   .search-input {
-    font-size: 16px; /* Prevents iOS auto-zoom on input focus */
+    font-size: 14px;
     padding: 5px 10px 5px 28px;
     border-radius: 12px;
     height: 34px;
   }
 
   .nav-actions {
-    gap: 4px;
+    gap: 6px;
     flex-shrink: 0;
   }
 
@@ -2245,93 +2216,112 @@ body {
   }
 
   .user-profile {
-    padding: 0;
-    border: none;
-    background: transparent;
+    padding: 2px 8px;
+    gap: 6px;
   }
 
   .user-avatar {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     font-size: 0.75rem;
     border-radius: 50%;
   }
 
   .user-name {
-    display: none;
+    display: inline-block !important;
+    font-size: 0.78rem;
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .main-content {
-    position: relative;
-    overflow-x: hidden;
-    height: calc(100vh - (56px + env(safe-area-inset-top, 0px)));
-    margin-top: calc(56px + env(safe-area-inset-top, 0px));
+    position: static !important;
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+    height: calc(100vh - (56px + env(safe-area-inset-top, 0px))) !important;
+    margin-top: calc(56px + env(safe-area-inset-top, 0px)) !important;
+    -webkit-overflow-scrolling: touch;
   }
 
   .sidebar {
-    position: fixed;
-    top: calc(56px + env(safe-area-inset-top, 0px));
-    left: -270px;
-    bottom: 0;
-    width: 260px;
-    z-index: 100;
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 10px 0 35px rgba(0, 0, 0, 0.9);
-    background: #0d0f17;
-    padding-bottom: env(safe-area-inset-bottom, 10px);
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: 160px !important;
+    min-width: 140px !important;
+    flex-shrink: 0 !important;
+    box-shadow: none !important;
+    background: #0d0f17 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+    padding: 10px 6px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    z-index: 1 !important;
   }
 
-  .sidebar.sidebar-open {
-    left: 0;
+  .sidebar .btn-compose {
+    padding: 8px 10px !important;
+    font-size: 0.8rem !important;
+    margin-bottom: 10px !important;
+  }
+
+  .sidebar .nav-item {
+    padding: 8px 10px !important;
+    font-size: 0.78rem !important;
+  }
+
+  .sidebar .nav-icon {
+    margin-right: 8px !important;
   }
 
   .email-list-pane {
-    width: 100%;
-    border-right: none;
-    padding: 10px 8px;
+    width: 230px !important;
+    min-width: 200px !important;
+    flex-shrink: 0 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+    padding: 8px 6px !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
   .email-card {
-    margin-bottom: 8px;
-    border-radius: 12px;
-    padding: 10px 12px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-  }
-
-  .email-card:active {
-    background: rgba(255, 30, 60, 0.12);
+    margin-bottom: 6px !important;
+    border-radius: 10px !important;
+    padding: 8px 10px !important;
   }
 
   .email-card-top .sender-name {
-    font-size: 0.88rem;
+    font-size: 0.82rem !important;
   }
 
   .email-card-top .email-time {
-    font-size: 0.72rem;
+    font-size: 0.68rem !important;
   }
 
   .email-subject {
-    font-size: 0.85rem;
+    font-size: 0.8rem !important;
     margin: 2px 0 3px 0;
   }
 
   .email-snippet {
-    font-size: 0.78rem;
-    line-height: 1.35;
+    font-size: 0.74rem !important;
+    line-height: 1.3;
   }
 
   .email-reader-pane {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: #090b10;
-    z-index: 90;
-    padding: 12px 10px calc(120px + env(safe-area-inset-bottom, 0px)) 10px;
-    transform: translateX(100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: static !important;
+    flex: 1 !important;
+    min-width: 300px !important;
+    transform: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background: #090b10 !important;
+    padding: 12px 10px calc(80px + env(safe-area-inset-bottom, 0px)) 10px !important;
     overflow-y: scroll !important;
     touch-action: pan-y !important;
     -webkit-overflow-scrolling: touch !important;
