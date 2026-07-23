@@ -25,15 +25,20 @@ export DEBIAN_FRONTEND=noninteractive
 sudo apt-get update -y
 sudo apt-get install -y curl git ufw nginx certbot python3-certbot-nginx postfix mailutils jq
 
-if ! command -v node &> /dev/null; then
+if ! command -v node &> /dev/null && [ ! -f /usr/bin/node ]; then
     curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - || true
     sudo apt-get install -y nodejs || true
 fi
 
-NODE_PATH="$(command -v node || echo '/usr/bin/node')"
-
-# Ensure /usr/bin/node symlink exists
-sudo ln -sf "${NODE_PATH}" /usr/bin/node || true
+if [ -f /usr/bin/node ] && [ ! -L /usr/bin/node ]; then
+    NODE_PATH="/usr/bin/node"
+else
+    REAL_NODE="$(which node || which nodejs || echo '/usr/bin/node')"
+    if [ "$REAL_NODE" != "/usr/bin/node" ] && [ -x "$REAL_NODE" ]; then
+        sudo ln -sf "$REAL_NODE" /usr/bin/node || true
+    fi
+    NODE_PATH="/usr/bin/node"
+fi
 
 # 4. Configure Postfix to pipe incoming mail directly into Node.js Webhook
 echo "📩 Configuring Postfix Mail Pipeline..."
