@@ -56,10 +56,17 @@ document.addEventListener('DOMContentLoaded', () => {
   let botBlockCount = 148;
 
   window.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'XMORF_IFRAME_RESIZE' && event.data.height) {
+    if (!event.data) return;
+    if (event.data.type === 'XMORF_IFRAME_RESIZE' && event.data.height) {
       const iframe = document.querySelector('.html-email-iframe');
       if (iframe) {
-        iframe.style.height = (event.data.height + 40) + 'px';
+        iframe.style.height = (event.data.height + 60) + 'px';
+      }
+    }
+    if (event.data.type === 'XMORF_IFRAME_WHEEL' && event.data.deltaY) {
+      const pane = document.querySelector('.email-reader-pane');
+      if (pane) {
+        pane.scrollTop += event.data.deltaY;
       }
     }
   });
@@ -609,10 +616,34 @@ function escapeAttr(str) {
           window.addEventListener('load', sendHeight);
           window.addEventListener('resize', sendHeight);
           document.addEventListener('DOMContentLoaded', sendHeight);
-          setTimeout(sendHeight, 300);
-          setTimeout(sendHeight, 1000);
-          setTimeout(sendHeight, 2500);
-          setInterval(sendHeight, 1500);
+          setTimeout(sendHeight, 200);
+          setTimeout(sendHeight, 600);
+          setTimeout(sendHeight, 1500);
+          setInterval(sendHeight, 1000);
+
+          window.addEventListener('wheel', function(e) {
+            try {
+              window.parent.postMessage({ type: 'XMORF_IFRAME_WHEEL', deltaY: e.deltaY }, '*');
+            } catch(e){}
+          }, { passive: true });
+
+          var lastTouchY = 0;
+          window.addEventListener('touchstart', function(e) {
+            if (e.touches && e.touches[0]) {
+              lastTouchY = e.touches[0].clientY;
+            }
+          }, { passive: true });
+
+          window.addEventListener('touchmove', function(e) {
+            try {
+              if (e.touches && e.touches[0]) {
+                var touchY = e.touches[0].clientY;
+                var deltaY = lastTouchY - touchY;
+                lastTouchY = touchY;
+                window.parent.postMessage({ type: 'XMORF_IFRAME_WHEEL', deltaY: deltaY }, '*');
+              }
+            } catch(e){}
+          }, { passive: true });
         </script>
       `;
 
