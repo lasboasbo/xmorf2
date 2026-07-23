@@ -29,39 +29,63 @@ function writeDB(db) {
   }
 }
 
+function cleanEmailAddress(str) {
+  if (!str) return '';
+  const match = String(str).match(/<([^>]+)>/);
+  return (match ? match[1] : str).toLowerCase().trim();
+}
+
+function getGermanFormattedDate() {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const timeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  return `${dateStr} um ${timeStr}`;
+}
+
 // GET all emails filtered by user email & folder
 router.get('/', (req, res) => {
   const { folder = 'inbox', search = '', userEmail = 'demo@xmorf.net' } = req.query;
   const db = readDB();
 
-  const cleanUserEmail = userEmail.toLowerCase().trim();
+  const cleanUserEmail = cleanEmailAddress(userEmail);
 
-  let filtered = db.emails.filter(email => {
-    const owner = (email.ownerEmail || email.recipient || '').toLowerCase().trim();
-    if (owner && owner !== cleanUserEmail && (email.senderEmail || '').toLowerCase().trim() !== cleanUserEmail) {
+  let filtered = (db.emails || []).filter(email => {
+    const owner = cleanEmailAddress(email.ownerEmail || email.recipient);
+    const recipient = cleanEmailAddress(email.recipient);
+    const sender = cleanEmailAddress(email.senderEmail);
+
+    const isOwner = owner === cleanUserEmail;
+    const isRecipient = recipient === cleanUserEmail;
+    const isSender = sender === cleanUserEmail;
+    const isDemoCatchall = (cleanUserEmail === 'demo@xmorf.net' && (!owner || owner === 'demo@xmorf.net'));
+
+    if (!isOwner && !isRecipient && !isSender && !isDemoCatchall) {
       return false;
     }
 
     if (folder === 'starred') {
-      return email.isStarred && email.folder !== 'trash';
+      return email.isStarred && (email.folder || 'inbox') !== 'trash';
     }
-    return email.folder.toLowerCase() === folder.toLowerCase();
+    return (email.folder || 'inbox').toLowerCase() === folder.toLowerCase();
   });
 
   if (search) {
     const q = search.toLowerCase();
     filtered = filtered.filter(e =>
-      e.subject.toLowerCase().includes(q) ||
-      e.senderName.toLowerCase().includes(q) ||
-      e.senderEmail.toLowerCase().includes(q) ||
-      e.body.toLowerCase().includes(q)
+      (e.subject || '').toLowerCase().includes(q) ||
+      (e.senderName || '').toLowerCase().includes(q) ||
+      (e.senderEmail || '').toLowerCase().includes(q) ||
+      (e.body || '').toLowerCase().includes(q)
     );
   }
 
   res.json({
     success: true,
     count: filtered.length,
-    unreadCount: db.emails.filter(e => (e.ownerEmail || e.recipient) === cleanUserEmail && e.folder === 'inbox' && e.isUnread).length,
+    unreadCount: (db.emails || []).filter(e => {
+      const owner = cleanEmailAddress(e.ownerEmail || e.recipient);
+      return owner === cleanUserEmail && (e.folder || 'inbox') === 'inbox' && e.isUnread;
+    }).length,
     emails: filtered
   });
 });
@@ -101,6 +125,8 @@ router.post('/send', (req, res) => {
   const cleanRecipient = recipient.toLowerCase().trim();
   const db = readDB();
 
+  const germanDateStr = getGermanFormattedDate();
+
   // 1. Sent email entry for sender
   const sentEmail = {
     id: 'em-sent-' + Date.now(),
@@ -112,7 +138,8 @@ router.post('/send', (req, res) => {
     subject: subject,
     preview: body ? body.substring(0, 90) + '...' : 'No content',
     body: body || '',
-    timestamp: 'Just now',
+    formattedDate: germanDateStr,
+    timestamp: germanDateStr,
     date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     isUnread: false,
     isStarred: false,
@@ -132,7 +159,8 @@ router.post('/send', (req, res) => {
     subject: subject,
     preview: body ? body.substring(0, 90) + '...' : 'No content',
     body: body || '',
-    timestamp: 'Just now',
+    formattedDate: germanDateStr,
+    timestamp: germanDateStr,
     date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     isUnread: true,
     isStarred: false,
@@ -263,6 +291,8 @@ router.post('/incoming-webhook', (req, res) => {
     return att;
   }).filter(Boolean);
 
+  const germanDateStr = getGermanFormattedDate();
+
   const inboxEmail = {
     id: 'em-real-inbox-' + Date.now(),
     ownerEmail: ownerEmail,
@@ -273,7 +303,8 @@ router.post('/incoming-webhook', (req, res) => {
     subject: subject,
     preview: body ? body.substring(0, 90).replace(/[\r\n]+/g, ' ') + '...' : 'No content',
     body: body || '',
-    timestamp: 'Just now',
+    formattedDate: germanDateStr,
+    timestamp: germanDateStr,
     date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     isUnread: true,
     isStarred: false,

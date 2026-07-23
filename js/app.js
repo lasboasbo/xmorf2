@@ -478,11 +478,13 @@ document.addEventListener('DOMContentLoaded', () => {
       li.style.animationDelay = `${Math.min(idx * 0.04, 0.4)}s`;
       
       const hasAttachment = e.attachments && e.attachments.length > 0;
+      const displayDate = e.formattedDate || e.date || e.timestamp || 'Just now';
+      const senderText = e.senderEmail ? `${e.senderName} (${e.senderEmail})` : e.senderName;
 
       li.innerHTML = `
         <div class="email-card-top">
-          <span class="sender-name">${escapeHtml(e.senderName)}</span>
-          <span class="email-time">${escapeHtml(e.timestamp)}</span>
+          <span class="sender-name" title="${escapeHtml(e.senderEmail || e.senderName)}">${escapeHtml(senderText)}</span>
+          <span class="email-time">${escapeHtml(displayDate)}</span>
         </div>
         <div class="email-subject">${escapeHtml(e.subject)}</div>
         <div class="email-snippet">${escapeHtml(e.preview)}</div>
@@ -526,6 +528,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const isTrashFolder = email.folder === 'trash';
     const isStarred = email.isStarred;
+    const displayDate = email.formattedDate || email.date || email.timestamp || new Date().toLocaleString();
 
     let attachmentsHtml = '';
     if (email.attachments && email.attachments.length > 0) {
@@ -585,6 +588,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${window.XmorfIcons.trash} <span data-i18n="deleteBtn">${window.i18n.get('deleteBtn')}</span>
               </button>
             `}
+          </div>
+        </div>
+
+        <div class="email-details-header" style="margin-top: 16px; padding: 16px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px;">
+          <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; color: var(--text-primary); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">${escapeHtml(email.subject)}</h2>
+          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.88rem;">
+            <div><strong style="color: var(--text-dim);">Absender:</strong> <span style="color: #60a5fa; font-weight: 600;">${escapeHtml(email.senderName)}</span> &lt;<span style="color: var(--text-primary); text-decoration: underline;">${escapeHtml(email.senderEmail || 'unbekannt')}</span>&gt;</div>
+            <div><strong style="color: var(--text-dim);">Empfänger:</strong> <span style="color: var(--text-primary); font-weight: 500;">${escapeHtml(email.recipient)}</span></div>
+            <div><strong style="color: var(--text-dim);">Datum & Zeit:</strong> <span style="color: #34d399; font-weight: 500;">${escapeHtml(displayDate)}</span></div>
           </div>
         </div>
       </div>
