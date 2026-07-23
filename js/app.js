@@ -421,6 +421,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Refresh Mailbox Button Handler & Auto-Polling
+  const btnRefreshMails = document.getElementById('btnRefreshMails');
+  if (btnRefreshMails) {
+    btnRefreshMails.addEventListener('click', async () => {
+      btnRefreshMails.style.opacity = '0.5';
+      await window.xmorfStore.refreshEmailsFromServer();
+      renderDashboard();
+      showToast('Mailbox updated');
+      setTimeout(() => { btnRefreshMails.style.opacity = '1'; }, 300);
+    });
+  }
+
+  // Auto-refresh emails every 8 seconds when user is logged in
+  setInterval(async () => {
+    if (window.xmorfStore.currentUser) {
+      await window.xmorfStore.refreshEmailsFromServer();
+      renderDashboard();
+    }
+  }, 8000);
+
   // Instant Main Render Dashboard Function
   function renderDashboard() {
     renderEmailList();
