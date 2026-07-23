@@ -1627,12 +1627,40 @@ body {
   display: flex;
   flex-direction: column;
   background: var(--bg-dark);
-  overflow-y: scroll !important;
+  overflow-y: auto !important;
   height: calc(100vh - 64px);
   max-height: calc(100vh - 64px);
   padding-bottom: 120px;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+}
+
+.html-email-wrapper img {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 12px 0;
+  border-radius: 6px;
+}
+
+.html-email-wrapper a {
+  color: #2563eb !important;
+  text-decoration: underline !important;
+}
+
+.html-email-wrapper blockquote {
+  margin: 12px 0;
+  padding: 8px 16px;
+  border-left: 3px solid #cbd5e1;
+  background: rgba(0, 0, 0, 0.02);
+  color: #334155;
+  border-radius: 4px;
+}
+
+.html-email-wrapper table {
+  max-width: 100% !important;
+  border-collapse: collapse;
+  margin: 12px 0;
 }
 
 .reader-header {

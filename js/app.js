@@ -600,67 +600,17 @@ function escapeAttr(str) {
 
     let emailBodyContent = '';
     if (isHtmlEmail) {
-      let iframeHtml = cleanBody;
-      const autoResizeScript = `
-        <script>
-          function sendHeight() {
-            try {
-              var h = Math.max(
-                document.body ? document.body.scrollHeight : 0,
-                document.documentElement ? document.documentElement.scrollHeight : 0,
-                350
-              );
-              window.parent.postMessage({ type: 'XMORF_IFRAME_RESIZE', height: h }, '*');
-            } catch(e){}
-          }
-          window.addEventListener('load', sendHeight);
-          window.addEventListener('resize', sendHeight);
-          document.addEventListener('DOMContentLoaded', sendHeight);
-          setTimeout(sendHeight, 200);
-          setTimeout(sendHeight, 600);
-          setTimeout(sendHeight, 1500);
-          setInterval(sendHeight, 1000);
-
-          window.addEventListener('wheel', function(e) {
-            try {
-              window.parent.postMessage({ type: 'XMORF_IFRAME_WHEEL', deltaY: e.deltaY }, '*');
-            } catch(e){}
-          }, { passive: true });
-
-          var lastTouchY = 0;
-          window.addEventListener('touchstart', function(e) {
-            if (e.touches && e.touches[0]) {
-              lastTouchY = e.touches[0].clientY;
-            }
-          }, { passive: true });
-
-          window.addEventListener('touchmove', function(e) {
-            try {
-              if (e.touches && e.touches[0]) {
-                var touchY = e.touches[0].clientY;
-                var deltaY = lastTouchY - touchY;
-                lastTouchY = touchY;
-                window.parent.postMessage({ type: 'XMORF_IFRAME_WHEEL', deltaY: deltaY }, '*');
-              }
-            } catch(e){}
-          }, { passive: true });
-        </script>
-      `;
-
-      if (!/<head/i.test(iframeHtml)) {
-        iframeHtml = `<meta charset="utf-8"><base target="_blank"><style>html,body{margin:0;padding:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#111;line-height:1.6;overflow-y:visible;}a{color:#2563eb;}img{max-width:100%;height:auto;display:block;margin:8px 0;}</style>${cleanBody}${autoResizeScript}`;
-      } else {
-        iframeHtml = iframeHtml.replace(/<head>/i, '<head><base target="_blank"><style>html,body{overflow-y:visible!important;}img{max-width:100%!important;}</style>').replace(/<\/body>/i, `${autoResizeScript}</body>`);
-      }
+      // Ensure all links in HTML body open in a new browser tab
+      let formattedHtml = cleanBody.replace(/<a\s+(?:[^>]*?\s+)?href=/gi, '<a target="_blank" rel="noopener noreferrer" href=');
 
       emailBodyContent = `
-        <div class="html-email-wrapper" style="margin: 16px 24px 32px 24px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; background: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-          <iframe class="html-email-iframe" sandbox="allow-popups allow-same-origin allow-scripts" srcdoc="${escapeAttr(iframeHtml)}" style="width: 100%; min-height: 450px; border: none; background: #ffffff; display: block;" onload="try { const h = Math.max(this.contentWindow.document.body.scrollHeight, 400); this.style.height = (h + 40) + 'px'; } catch(e){}"></iframe>
+        <div class="html-email-wrapper" style="margin: 16px 24px 32px 24px; padding: 28px 32px; background: #ffffff; color: #111111; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; word-break: break-word; overflow: visible;">
+          ${formattedHtml}
         </div>
       `;
     } else {
       emailBodyContent = `
-        <div class="reader-body" style="margin: 16px 24px 32px 24px; padding: 24px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; white-space: pre-wrap; font-family: inherit; line-height: 1.7; overflow-y: auto; max-height: none;">${escapeHtml(cleanBody)}</div>
+        <div class="reader-body" style="margin: 16px 24px 32px 24px; padding: 28px 32px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; white-space: pre-wrap; font-family: inherit; line-height: 1.7; color: #e2e8f0;">${escapeHtml(cleanBody)}</div>
       `;
     }
 
