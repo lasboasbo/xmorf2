@@ -576,7 +576,11 @@ function escapeAttr(str) {
     }
 
     let cleanBody = decodeHtmlEntities(email.bodyHtml || email.body || '');
-    const isHtmlEmail = /<[a-z\/\!][\s\S]*>/i.test(cleanBody);
+    // If double entity encoded, decode once more
+    if (/&lt;[a-z\/\!]/i.test(cleanBody)) {
+      cleanBody = decodeHtmlEntities(cleanBody);
+    }
+    const isHtmlEmail = /<[a-z\/\!][^>]*>/i.test(cleanBody);
 
     let emailBodyContent = '';
     if (isHtmlEmail) {

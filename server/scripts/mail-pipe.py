@@ -38,7 +38,22 @@ def main():
                     content_id = str(part.get('Content-ID') or '').strip('<>')
                     filename = part.get_filename()
 
-                    if filename or 'attachment' in content_disposition or content_id:
+                    # 1. Capture HTML body
+                    if content_type == 'text/html' and not html_body and not filename:
+                        try:
+                            html_body = part.get_content()
+                        except Exception:
+                            pass
+
+                    # 2. Capture Plain Text body
+                    elif content_type == 'text/plain' and not text_body and not filename:
+                        try:
+                            text_body = part.get_content()
+                        except Exception:
+                            pass
+
+                    # 3. Capture Attachments & Inline Images
+                    if (filename or 'attachment' in content_disposition or (content_id and content_type.startswith('image/'))) and content_type not in ('multipart/mixed', 'multipart/related', 'multipart/alternative'):
                         payload = part.get_payload(decode=True)
                         if payload:
                             attachments.append({
@@ -48,29 +63,18 @@ def main():
                                 'size': len(payload),
                                 'content': base64.b64encode(payload).decode('utf-8')
                             })
-
-                    if content_type == 'text/html' and not html_body:
-                        try:
-                            html_body = part.get_content()
-                        except Exception:
-                            pass
-                    elif content_type == 'text/plain' and not text_body:
-                        try:
-                            text_body = part.get_content()
-                        except Exception:
-                            pass
             else:
                 content_type = parsed.get_content_type()
                 if content_type == 'text/html':
                     html_body = parsed.get_content()
                 else:
                     text_body = parsed.get_content()
-        except Exception as e:
-            text_body = raw_data.decode('utf-8', errors='ignore')[:20000]
+        except Exception:
+            text_body = raw_data.decode('utf-8', errors='ignore')[:30000]
 
         final_body = html_body if html_body else text_body
         if not final_body:
-            final_body = raw_data.decode('utf-8', errors='ignore')[:20000]
+            final_body = raw_data.decode('utf-8', errors='ignore')[:30000]
 
         payload = json.dumps({
             'senderEmail': str(sender),
