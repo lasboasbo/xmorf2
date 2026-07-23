@@ -1,18 +1,27 @@
 #!/usr/bin/env python3
 import sys
 import json
+import re
 import urllib.request
 from email import message_from_bytes
 from email.policy import default
+
+def extract_email(str_val):
+    if not str_val:
+        return ''
+    match = re.search(r'<([^>]+)>', str(str_val))
+    return (match.group(1) if match else str(str_val)).strip().lower()
 
 def main():
     try:
         raw_data = sys.stdin.buffer.read()
         parsed = message_from_bytes(raw_data, policy=default)
 
-        recipient = sys.argv[1] if len(sys.argv) > 1 else (parsed.get('To') or 'demo@xmorf.net')
-        sender = sys.argv[2] if len(sys.argv) > 2 else (parsed.get('From') or 'external@unknown.com')
+        raw_recipient = sys.argv[1] if len(sys.argv) > 1 else (parsed.get('To') or 'demo@xmorf.net')
+        raw_sender = sys.argv[2] if len(sys.argv) > 2 else (parsed.get('From') or 'external@unknown.com')
 
+        recipient = extract_email(raw_recipient)
+        sender = extract_email(raw_sender)
         subject = parsed.get('Subject') or '(No Subject)'
         sender_name = parsed.get('From') or sender
 

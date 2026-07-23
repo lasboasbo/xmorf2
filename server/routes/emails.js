@@ -242,11 +242,12 @@ router.post('/incoming-webhook', (req, res) => {
     return res.status(400).json({ success: false, message: 'Recipient and subject required.' });
   }
 
-  const cleanRecipient = recipient.toLowerCase().trim();
+  const cleanRecipient = cleanEmailAddress(recipient);
+  const cleanSender = cleanEmailAddress(senderEmail);
   const db = readDB();
 
   // Check if a registered user exists for this recipient
-  const targetUser = (db.users || []).find(u => (u.email || '').toLowerCase().trim() === cleanRecipient);
+  const targetUser = (db.users || []).find(u => cleanEmailAddress(u.email) === cleanRecipient);
   // Catch-all: if recipient user doesn't exist, deliver to demo@xmorf.net so external emails are never lost
   const ownerEmail = targetUser ? cleanRecipient : (cleanRecipient.endsWith('@xmorf.net') ? 'demo@xmorf.net' : cleanRecipient);
 
