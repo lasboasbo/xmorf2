@@ -559,11 +559,11 @@ body {
   }
 
   .auth-split-logo {
-    height: 54px;
+    height: 140px;
     width: auto;
-    max-width: 180px;
+    max-width: 240px;
     object-fit: contain;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
     align-self: flex-start;
     flex-shrink: 0;
   }
