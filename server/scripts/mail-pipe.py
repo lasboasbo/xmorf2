@@ -35,34 +35,42 @@ def main():
                 for part in parsed.walk():
                     content_type = part.get_content_type()
                     content_disposition = str(part.get('Content-Disposition') or '')
+                    content_id = str(part.get('Content-ID') or '').strip('<>')
                     filename = part.get_filename()
 
-                    if filename or 'attachment' in content_disposition:
+                    if filename or 'attachment' in content_disposition or content_id:
                         payload = part.get_payload(decode=True)
                         if payload:
                             attachments.append({
-                                'name': filename or 'attachment',
+                                'name': filename or (f"inline-{content_id}.png" if content_id else 'attachment'),
+                                'cid': content_id,
                                 'contentType': content_type,
                                 'size': len(payload),
                                 'content': base64.b64encode(payload).decode('utf-8')
                             })
-                    else:
-                        if content_type == 'text/html' and not html_body:
+
+                    if content_type == 'text/html' and not html_body:
+                        try:
                             html_body = part.get_content()
-                        elif content_type == 'text/plain' and not text_body:
+                        except Exception:
+                            pass
+                    elif content_type == 'text/plain' and not text_body:
+                        try:
                             text_body = part.get_content()
+                        except Exception:
+                            pass
             else:
                 content_type = parsed.get_content_type()
                 if content_type == 'text/html':
                     html_body = parsed.get_content()
                 else:
                     text_body = parsed.get_content()
-        except Exception:
-            text_body = raw_data.decode('utf-8', errors='ignore')[:10000]
+        except Exception as e:
+            text_body = raw_data.decode('utf-8', errors='ignore')[:20000]
 
         final_body = html_body if html_body else text_body
         if not final_body:
-            final_body = raw_data.decode('utf-8', errors='ignore')[:10000]
+            final_body = raw_data.decode('utf-8', errors='ignore')[:20000]
 
         payload = json.dumps({
             'senderEmail': str(sender),

@@ -251,6 +251,8 @@ router.post('/incoming-webhook', (req, res) => {
   // Catch-all: if recipient user doesn't exist, deliver to demo@xmorf.net so external emails are never lost
   const ownerEmail = targetUser ? cleanRecipient : (cleanRecipient.endsWith('@xmorf.net') ? 'demo@xmorf.net' : cleanRecipient);
 
+  let rawContent = bodyHtml || body || bodyText || '';
+
   // Process attachments if raw base64 content is sent from mail-pipe
   const processedAttachments = (attachments || []).map(att => {
     if (att.content && typeof att.content === 'string') {
@@ -261,7 +263,20 @@ router.post('/incoming-webhook', (req, res) => {
           fs.mkdirSync(uploadDir, { recursive: true });
         }
         const filePath = path.join(uploadDir, uniqueFilename);
-        fs.writeFileSync(filePath, Buffer.from(att.content, 'base64'));
+        const buffer = Buffer.from(att.content, 'base64');
+        fs.writeFileSync(filePath, buffer);
+
+        const fileUrl = `/api/uploads/${uniqueFilename}`;
+
+        // If attachment has a Content-ID (CID), replace all cid: references in rawContent!
+        if (att.cid) {
+          const cleanCid = att.cid.replace(/^<|>$/g, '').trim();
+          if (cleanCid) {
+            const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const cidRegex = new RegExp(`cid:<?${escapeRegExp(cleanCid)}>?`, 'gi');
+            rawContent = rawContent.replace(cidRegex, fileUrl);
+          }
+        }
 
         const formatSize = (bytes) => {
           if (!bytes) return '0 B';
@@ -270,19 +285,21 @@ router.post('/incoming-webhook', (req, res) => {
           return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
         };
 
+        const mimeType = att.contentType || '';
         const fileExt = path.extname(att.name || '').toLowerCase().replace('.', '');
         let fileType = 'document';
-        if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(fileExt)) fileType = 'image';
+        if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(fileExt) || mimeType.startsWith('image/')) fileType = 'image';
         if (fileExt === 'pdf') fileType = 'pdf';
         if (['zip', 'rar', '7z', 'tar', 'gz'].includes(fileExt)) fileType = 'archive';
 
         return {
           id: 'att-' + Date.now() + '-' + Math.round(Math.random() * 1000),
           name: att.name || 'attachment',
-          size: formatSize(att.size || 0),
+          size: formatSize(att.size || buffer.length),
           type: fileType,
           filename: uniqueFilename,
-          url: `/api/uploads/${uniqueFilename}`
+          url: fileUrl,
+          cid: att.cid || null
         };
       } catch (err) {
         console.error('Failed to save incoming attachment:', err);
@@ -293,7 +310,6 @@ router.post('/incoming-webhook', (req, res) => {
   }).filter(Boolean);
 
   const germanDateStr = getGermanFormattedDate();
-  const rawContent = bodyHtml || body || bodyText || '';
   const previewText = rawContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
   const inboxEmail = {
@@ -306,7 +322,7 @@ router.post('/incoming-webhook', (req, res) => {
     subject: subject,
     preview: previewText ? previewText.substring(0, 90) + '...' : 'No content',
     body: rawContent,
-    bodyHtml: bodyHtml || '',
+    bodyHtml: rawContent,
     bodyText: bodyText || '',
     formattedDate: germanDateStr,
     timestamp: germanDateStr,
