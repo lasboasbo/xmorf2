@@ -50,7 +50,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -64,67 +64,78 @@
   <div id="authScreen" class="auth-overlay">
     
     <!-- FIRST VIEW: Clean Human Cypherpunk Security Landing Info Page -->
-    <div id="landingView" class="landing-hero-wrapper">
-      <div class="landing-hero-content">
+    <div id="landingView" class="landing-page">
 
-        <div class="landing-brand-header">
-          <img src="logo.png" alt="Xmorf Logo" class="landing-logo">
-          <div>
-            <span class="landing-brand-name">Xmorf.net</span>
-            <span class="landing-brand-tag">Anonymous Encrypted Mail Network</span>
-          </div>
+      <header class="landing-navbar">
+        <div class="landing-navbar-brand">
+          <img src="logo.png" alt="Xmorf Logo" class="landing-navbar-logo">
+          <span class="landing-navbar-name">Xmorf.net</span>
         </div>
+        <nav class="landing-navbar-actions">
+          <button id="btnQuickLogin" class="navbar-link-btn">Sign In</button>
+          <button id="btnQuickRegister" class="navbar-cta-btn">Register</button>
+        </nav>
+      </header>
 
-        <h1 class="hero-title">FUCK CHAT CONTROL</h1>
+      <main class="landing-main">
 
-        <p class="hero-subtitle">
-          No Master Keys. No Client Scanning. No Compromise.
-        </p>
+        <!-- Hero Section: Two-Column (Message + Protected Video) -->
+        <section class="hero-section">
+          <div class="hero-col-text">
+            <div class="hero-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+              <span>Anonymous Encrypted Mail Network</span>
+            </div>
 
-        <div class="hero-manifesto-box">
-          <p>
-            Mass surveillance isn't safety — it's control. Xmorf.net was built as an independent, anti-surveillance webmail engine. We strip your IP, encrypt your messages, and run on sovereign bare metal that rejects backdoor compliance.
-          </p>
-        </div>
+            <h1 class="hero-title">FUCK CHAT CONTROL</h1>
 
-        <!-- Protected Embedded Streaming Video Player (Autoplay & Non-Downloadable) -->
-        <div class="video-hero-card">
-          <!-- Xmorf Logo Watermark Overlay -->
-          <div class="video-watermark">
-            <img src="logo.png" alt="Xmorf Logo" class="watermark-logo">
-            <span class="watermark-text">Xmorf.net</span>
+            <p class="hero-subtitle">
+              No Master Keys. No Client Scanning. No Compromise.
+            </p>
+
+            <div class="hero-manifesto-box">
+              <p>
+                Mass surveillance isn't safety — it's control. Xmorf.net was built as an independent, anti-surveillance webmail engine. We strip your IP, encrypt your messages, and run on sovereign bare metal that rejects backdoor compliance.
+              </p>
+            </div>
+
+            <!-- Direct Action Buttons -->
+            <div class="hero-cta-group">
+              <button id="btnGoToWebmail" class="btn-primary hero-cta-btn">
+                <span>Enter Encrypted Webmail</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+            </div>
           </div>
 
-          <div class="video-protection-overlay"></div>
-          <video id="landingVideo" class="landing-video" autoplay loop muted playsinline controlsList="nodownload nofullscreen noremoteplayback" disablepictureinpicture oncontextmenu="return false;">
-            <source src="/api/video/stream" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
-          <div class="video-controls-bar">
-            <button id="btnToggleSound" class="video-sound-btn">
-              <svg id="soundIconMuted" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-              <svg id="soundIconUnmuted" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-              <span id="soundBtnText">Enable Sound / Audio 🔊</span>
-            </button>
-            <span class="video-tag-pill">Protected Stream (No Download)</span>
-          </div>
-        </div>
+          <div class="hero-col-media">
+            <!-- Protected Embedded Streaming Video Player (Autoplay & Non-Downloadable) -->
+            <div class="video-hero-card">
+              <!-- Xmorf Logo Watermark Overlay -->
+              <div class="video-watermark">
+                <img src="logo.png" alt="Xmorf Logo" class="watermark-logo">
+                <span class="watermark-text">Xmorf.net</span>
+              </div>
 
-        <!-- Direct Action Buttons -->
-        <div class="hero-cta-group">
-          <button id="btnGoToWebmail" class="btn-primary hero-cta-btn">
-            <span>Enter Encrypted Webmail</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </button>
-          <div class="hero-cta-sublinks">
-            <button id="btnQuickLogin" class="cta-link-btn">Sign In</button>
-            <span class="dot-separator">•</span>
-            <button id="btnQuickRegister" class="cta-link-btn">Register New Account</button>
+              <div class="video-protection-overlay"></div>
+              <video id="landingVideo" class="landing-video" autoplay loop muted playsinline controlsList="nodownload nofullscreen noremoteplayback" disablepictureinpicture oncontextmenu="return false;">
+                <source src="/api/video/stream" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <div class="video-controls-bar">
+                <button id="btnToggleSound" class="video-sound-btn">
+                  <svg id="soundIconMuted" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+                  <svg id="soundIconUnmuted" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                  <span id="soundBtnText">Enable Sound / Audio</span>
+                </button>
+                <span class="video-tag-pill">Protected Stream (No Download)</span>
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
 
         <!-- Clean Human Comparison Table with Vector Icons -->
-        <div class="comparison-section">
+        <section class="comparison-section">
           <h2 class="section-title">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             <span>Platform Comparison</span>
@@ -240,56 +251,91 @@
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
 
         <!-- Direct Security Features -->
-        <div class="landing-features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            </div>
-            <div>
-              <div class="feature-title">Zero-Knowledge Architecture</div>
-              <div class="feature-desc">Messages are encrypted before leaving your browser. Even server operators cannot read your email.</div>
-            </div>
-          </div>
+        <section class="features-section">
+          <h2 class="section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span>Built-In Security</span>
+          </h2>
 
-          <div class="feature-card">
-            <div class="feature-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div class="landing-features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div>
+                <div class="feature-title">Zero-Knowledge Architecture</div>
+                <div class="feature-desc">Messages are encrypted before leaving your browser. Even server operators cannot read your email.</div>
+              </div>
             </div>
-            <div>
-              <div class="feature-title">Anti-Chat-Control Shield</div>
-              <div class="feature-desc">Self-hosted sovereign infrastructure immune to warrantless EU scanning and client-side backdoor mandates.</div>
-            </div>
-          </div>
 
-          <div class="feature-card">
-            <div class="feature-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div>
+                <div class="feature-title">Anti-Chat-Control Shield</div>
+                <div class="feature-desc">Self-hosted sovereign infrastructure immune to warrantless EU scanning and client-side backdoor mandates.</div>
+              </div>
             </div>
-            <div>
-              <div class="feature-title">Volatile RAM Wiping</div>
-              <div class="feature-desc">All active data stays in volatile memory. If server power is lost, data instantly disintegrates.</div>
-            </div>
-          </div>
 
-          <div class="feature-card">
-            <div class="feature-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              </div>
+              <div>
+                <div class="feature-title">Volatile RAM Wiping</div>
+                <div class="feature-desc">All active data stays in volatile memory. If server power is lost, data instantly disintegrates.</div>
+              </div>
             </div>
-            <div>
-              <div class="feature-title">Metadata Scrubbing</div>
-              <div class="feature-desc">Sender IP addresses and device signatures are automatically stripped before email delivery.</div>
+
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <div>
+                <div class="feature-title">Metadata Scrubbing</div>
+                <div class="feature-desc">Sender IP addresses and device signatures are automatically stripped before email delivery.</div>
+              </div>
             </div>
           </div>
+        </section>
+
+      </main>
+
+      <footer class="landing-footer">
+        <div class="landing-footer-brand">
+          <img src="logo.png" alt="Xmorf Logo" class="landing-footer-logo">
+          <span>Xmorf.net</span>
         </div>
-
-      </div>
+        <p class="landing-footer-copy">Independent sovereign infrastructure. Zero logs. No compromise.</p>
+      </footer>
     </div>
 
     <!-- SECOND VIEW: Webmail Auth Card (Login & Register Screen as before) -->
     <div id="authCardView" class="auth-card-wrapper hidden">
+      <div class="auth-split">
+        <div class="auth-split-info">
+          <img src="logo.png" alt="Xmorf Logo" class="auth-split-logo">
+          <h3 class="auth-split-title">Private Mail, Built for People Who Value Privacy.</h3>
+          <p class="auth-split-desc">No phone number. No client-side scanning. Encrypted mailboxes running on independent, sovereign infrastructure.</p>
+          <div class="auth-split-points">
+            <div class="auth-split-point">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z"/></svg>
+              256-bit encrypted mailboxes
+            </div>
+            <div class="auth-split-point">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+              No phone verification required
+            </div>
+            <div class="auth-split-point">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              IP stripping on every message
+            </div>
+          </div>
+        </div>
       <div class="auth-card">
         <button id="btnBackToLanding" class="back-to-landing-btn">
           ← Back to Info Page
@@ -358,6 +404,7 @@
 
           <button type="submit" class="btn-primary" data-i18n="registerBtn">Create Encrypted Account</button>
         </form>
+      </div>
       </div>
     </div>
 

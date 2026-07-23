@@ -110,11 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (landingVideo.muted) {
       soundIconMuted?.classList.remove('hidden');
       soundIconUnmuted?.classList.add('hidden');
-      if (soundBtnText) soundBtnText.innerText = 'Enable Sound / Audio 🔊';
+      if (soundBtnText) soundBtnText.innerText = 'Enable Sound / Audio';
     } else {
       soundIconMuted?.classList.add('hidden');
       soundIconUnmuted?.classList.remove('hidden');
-      if (soundBtnText) soundBtnText.innerText = 'Sound Enabled 🔊';
+      if (soundBtnText) soundBtnText.innerText = 'Sound Enabled';
     }
   }
 
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
       landingVideo.play().catch(() => {});
       soundIconMuted?.classList.add('hidden');
       soundIconUnmuted?.classList.remove('hidden');
-      if (soundBtnText) soundBtnText.innerText = 'Sound Enabled 🔊';
+      if (soundBtnText) soundBtnText.innerText = 'Sound Enabled';
     }
   };
 
