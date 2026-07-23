@@ -83,10 +83,10 @@ sed -i '/xmorfpipe/d' /etc/postfix/master.cf || true
 cat <<EOF >> /etc/postfix/master.cf
 
 xmorfpipe unix - n n - - pipe
-  flags=Fqhu user=www-data argv=/usr/bin/node ${APP_DIR}/server/scripts/mail-pipe.js \${recipient} \${sender}
+  flags=Fqhu user=nobody argv=/usr/bin/python3 ${APP_DIR}/server/scripts/mail-pipe.py \${recipient} \${sender}
 EOF
 
-chmod +x "${APP_DIR}/server/scripts/mail-pipe.js" || true
+chmod +x "${APP_DIR}/server/scripts/mail-pipe.py" || true
 
 sudo systemctl restart postfix || true
 
