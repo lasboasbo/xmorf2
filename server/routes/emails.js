@@ -154,11 +154,41 @@ router.post('/send', (req, res) => {
   if (cleanRecipient.includes('@') && !cleanRecipient.endsWith('@xmorf.net')) {
     const transporter = getSmtpTransporter();
     if (transporter) {
+      const formattedAttachments = (attachments || []).map(att => {
+        if (att.filename) {
+          const filePath = path.join(__dirname, '../uploads', att.filename);
+          if (fs.existsSync(filePath)) {
+            return {
+              filename: att.name || att.filename,
+              path: filePath
+            };
+          }
+        }
+        if (att.content && typeof att.content === 'string') {
+          if (att.content.startsWith('data:')) {
+            const matches = att.content.match(/^data:(.+);base64,(.+)$/);
+            if (matches) {
+              return {
+                filename: att.name || 'attachment',
+                content: Buffer.from(matches[2], 'base64')
+              };
+            }
+          } else {
+            return {
+              filename: att.name || 'attachment',
+              content: att.content
+            };
+          }
+        }
+        return null;
+      }).filter(Boolean);
+
       transporter.sendMail({
         from: `"${senderName}" <${process.env.SMTP_FROM || cleanSender}>`,
         to: cleanRecipient,
         subject: subject,
-        text: body
+        text: body,
+        attachments: formattedAttachments
       }).catch(err => {
         console.warn('Real SMTP delivery warning:', err.message);
       });
