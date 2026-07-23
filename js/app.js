@@ -591,6 +591,124 @@ function escapeAttr(str) {
       `;
     }
 
+function renderHtmlEmailInShadowDom(hostElement, htmlContent) {
+  try {
+    const shadow = hostElement.attachShadow({ mode: 'open' });
+
+    const defaultStyle = `
+      :host {
+        display: block;
+        background: #ffffff !important;
+        color: #111111 !important;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin: 16px 24px 32px 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        word-break: break-word;
+        overflow-x: auto;
+      }
+      @media (max-width: 768px) {
+        :host {
+          margin: 10px 4px 24px 4px !important;
+          padding: 16px 12px !important;
+        }
+      }
+      * {
+        box-sizing: border-box !important;
+        max-height: none !important;
+      }
+      img, svg, video, canvas {
+        max-width: 100% !important;
+        height: auto !important;
+        display: inline-block;
+      }
+      table {
+        max-width: 100% !important;
+      }
+      a {
+        color: #2563eb !important;
+        text-decoration: underline !important;
+      }
+      blockquote {
+        margin: 12px 0;
+        padding: 8px 16px;
+        border-left: 3px solid #cbd5e1;
+        background: rgba(0, 0, 0, 0.03);
+        color: #334155;
+      }
+    `;
+
+    const styleEl = document.createElement('style');
+    styleEl.textContent = defaultStyle;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'xmorf-email-inner-wrapper';
+    wrapper.innerHTML = htmlContent;
+
+    wrapper.querySelectorAll('a').forEach(a => {
+      a.setAttribute('target', '_blank');
+      a.setAttribute('rel', 'noopener noreferrer');
+    });
+
+    shadow.appendChild(styleEl);
+    shadow.appendChild(wrapper);
+  } catch (e) {
+    console.error('Shadow DOM render error:', e);
+    hostElement.innerHTML = `<div style="background:#ffffff; color:#111111; padding:24px; border-radius:12px; margin:16px 24px 32px 24px; font-family:sans-serif;">${htmlContent}</div>`;
+  }
+}
+
+  // Render Email Reader Pane
+  function renderEmailReader() {
+    const selectedId = window.xmorfStore.selectedEmailId;
+    const email = window.xmorfStore.getEmailById(selectedId);
+
+    if (!email) {
+      emailReaderPane.innerHTML = `
+        <div class="reader-empty">
+          <div class="reader-empty-icon">${window.XmorfIcons.mailEmpty}</div>
+          <p data-i18n="noEmailsFound">${window.i18n.get('noEmailsFound')}</p>
+        </div>
+      `;
+      return;
+    }
+
+    const isTrashFolder = email.folder === 'trash';
+    const isStarred = email.isStarred;
+    const displayDate = email.formattedDate || email.date || email.timestamp || new Date().toLocaleString();
+
+    let attachmentsHtml = '';
+    if (email.attachments && email.attachments.length > 0) {
+      attachmentsHtml = `
+        <div class="attachments-section">
+          <div class="attachments-title" style="display: flex; align-items: center; gap: 6px;">
+            ${window.XmorfIcons.paperclip} Attached Files (${email.attachments.length})
+          </div>
+          <div class="attachments-grid">
+            ${email.attachments.map((att, idx) => {
+              const isPurged = att.purged || att.name === 'this file got purged on a data purge' || att.content === 'this file got purged on a data purge';
+              const nameText = isPurged ? 'this file got purged on a data purge' : escapeHtml(att.name);
+              const sizeText = isPurged ? 'Purged' : escapeHtml(att.size);
+
+              return `
+              <div class="attachment-card ${isPurged ? 'purged' : ''}" style="${isPurged ? 'border-color: rgba(255,30,60,0.5); background: rgba(255,30,60,0.08);' : ''}">
+                <span class="att-icon">${getFileIconSvg(att.type)}</span>
+                <div class="att-details">
+                  <div class="att-name" style="${isPurged ? 'color: #ff4d6d; font-weight: 700;' : ''}">${nameText}</div>
+                  <div class="att-size">${sizeText}</div>
+                </div>
+                <button class="att-download-btn" data-email-id="${email.id}" data-att-idx="${idx}">${window.XmorfIcons.download}</button>
+              </div>
+            `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
     let cleanBody = decodeHtmlEntities(email.bodyHtml || email.body || '');
     if (/&lt;[a-z\/\!]/i.test(cleanBody)) {
       cleanBody = decodeHtmlEntities(cleanBody);
@@ -599,140 +717,7 @@ function escapeAttr(str) {
 
     let emailBodyContent = '';
     if (isHtmlEmail) {
-      const overrideStyle = `
-        <style id="xmorfOverrideStyle">
-          html, body {
-            height: auto !important;
-            max-height: none !important;
-            min-height: 0 !important;
-            overflow: visible !important;
-            overflow-y: visible !important;
-            margin: 0 !important;
-            padding: 16px !important;
-            background: #ffffff !important;
-            color: #111111 !important;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
-            line-height: 1.6 !important;
-            word-break: break-word !important;
-            box-sizing: border-box !important;
-          }
-          div, table, tbody, tr, td, section, article, main, header, footer, p, span {
-            max-height: none !important;
-            box-sizing: border-box !important;
-          }
-          img, svg, video, canvas {
-            max-width: 100% !important;
-            height: auto !important;
-            display: inline-block !important;
-          }
-          a {
-            color: #2563eb !important;
-          }
-          table {
-            max-width: 100% !important;
-          }
-        </style>
-      `;
-
-      const autoResizeScript = `
-        <script>
-          (function() {
-            function getRealHeight() {
-              try {
-                var b = document.body;
-                var e = document.documentElement;
-                var maxH = 0;
-                if (b) {
-                  maxH = Math.max(b.scrollHeight, b.offsetHeight, b.clientHeight);
-                  var children = b.children;
-                  for (var i = 0; i < children.length; i++) {
-                    var rect = children[i].getBoundingClientRect();
-                    if (rect.bottom > maxH) maxH = rect.bottom;
-                  }
-                }
-                if (e) {
-                  maxH = Math.max(maxH, e.scrollHeight, e.offsetHeight);
-                }
-                return Math.max(Math.ceil(maxH), 350);
-              } catch(err) {
-                return 500;
-              }
-            }
-
-            function pushHeight() {
-              try {
-                var h = getRealHeight();
-                window.parent.postMessage({ type: 'XMORF_RESIZE', height: h }, '*');
-              } catch(e){}
-            }
-
-            window.addEventListener('load', pushHeight);
-            window.addEventListener('resize', pushHeight);
-            document.addEventListener('DOMContentLoaded', pushHeight);
-            [100, 300, 600, 1200, 2500, 5000].forEach(function(delay) {
-              setTimeout(pushHeight, delay);
-            });
-            setInterval(pushHeight, 1500);
-
-            try {
-              if (window.ResizeObserver && document.body) {
-                var ro = new ResizeObserver(pushHeight);
-                ro.observe(document.body);
-              }
-            } catch(e){}
-
-            window.addEventListener('wheel', function(e) {
-              try {
-                window.parent.postMessage({ type: 'XMORF_WHEEL', deltaY: e.deltaY }, '*');
-              } catch(e){}
-            }, { passive: true });
-
-            var lastTouchY = 0;
-            window.addEventListener('touchstart', function(e) {
-              if (e.touches && e.touches[0]) {
-                lastTouchY = e.touches[0].clientY;
-              }
-            }, { passive: true });
-
-            window.addEventListener('touchmove', function(e) {
-              try {
-                if (e.touches && e.touches[0]) {
-                  var touchY = e.touches[0].clientY;
-                  var deltaY = lastTouchY - touchY;
-                  lastTouchY = touchY;
-                  window.parent.postMessage({ type: 'XMORF_WHEEL', deltaY: deltaY }, '*');
-                }
-              } catch(e){}
-            }, { passive: true });
-          })();
-        </script>
-      `;
-
-      let iframeContent = cleanBody;
-
-      if (/<\/head>/i.test(iframeContent)) {
-        iframeContent = iframeContent.replace(/<\/head>/i, `${overrideStyle}</head>`);
-      } else if (/<head>/i.test(iframeContent)) {
-        iframeContent = iframeContent.replace(/<head>/i, `<head><base target="_blank">${overrideStyle}`);
-      } else {
-        iframeContent = `<meta charset="utf-8"><base target="_blank">${overrideStyle}${iframeContent}`;
-      }
-
-      if (!/<base /i.test(iframeContent)) {
-        iframeContent = iframeContent.replace(/<meta[^>]*>/i, `$&<base target="_blank">`);
-      }
-
-      if (/<\/body>/i.test(iframeContent)) {
-        iframeContent = iframeContent.replace(/<\/body>/i, `${overrideStyle}${autoResizeScript}</body>`);
-      } else {
-        iframeContent += `${overrideStyle}${autoResizeScript}`;
-      }
-
-      emailBodyContent = `
-        <div class="html-email-wrapper" style="margin: 16px 24px 32px 24px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; background: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-          <iframe class="html-email-iframe" sandbox="allow-popups allow-same-origin allow-scripts" srcdoc="${escapeAttr(iframeContent)}" style="width: 100%; min-height: 450px; height: 500px; border: none; background: #ffffff; display: block; overflow-y: auto !important;" onload="try { const h = Math.max(this.contentWindow.document.body.scrollHeight, 450); this.style.height = (h + 40) + 'px'; } catch(e){}"></iframe>
-        </div>
-      `;
+      emailBodyContent = `<div id="htmlEmailShadowHost" class="html-email-shadow-host"></div>`;
     } else {
       emailBodyContent = `
         <div class="reader-body" style="margin: 16px 24px 32px 24px; padding: 28px 32px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; white-space: pre-wrap; font-family: inherit; line-height: 1.7; color: #e2e8f0; overflow-y: auto;">${escapeHtml(cleanBody)}</div>
@@ -839,6 +824,13 @@ function escapeAttr(str) {
         window.xmorfStore.selectedEmailId = null;
         renderDashboard();
       });
+    }
+
+    if (isHtmlEmail) {
+      const shadowHost = document.getElementById('htmlEmailShadowHost');
+      if (shadowHost) {
+        renderHtmlEmailInShadowDom(shadowHost, cleanBody);
+      }
     }
   }
 
