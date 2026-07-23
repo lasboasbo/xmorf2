@@ -543,54 +543,6 @@ function escapeAttr(str) {
   return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
 
-  // Render Email Reader Pane
-  function renderEmailReader() {
-    const selectedId = window.xmorfStore.selectedEmailId;
-    const email = window.xmorfStore.getEmailById(selectedId);
-
-    if (!email) {
-      emailReaderPane.innerHTML = `
-        <div class="reader-empty">
-          <div class="reader-empty-icon">${window.XmorfIcons.mailEmpty}</div>
-          <p data-i18n="noEmailsFound">${window.i18n.get('noEmailsFound')}</p>
-        </div>
-      `;
-      return;
-    }
-
-    const isTrashFolder = email.folder === 'trash';
-    const isStarred = email.isStarred;
-    const displayDate = email.formattedDate || email.date || email.timestamp || new Date().toLocaleString();
-
-    let attachmentsHtml = '';
-    if (email.attachments && email.attachments.length > 0) {
-      attachmentsHtml = `
-        <div class="attachments-section">
-          <div class="attachments-title" style="display: flex; align-items: center; gap: 6px;">
-            ${window.XmorfIcons.paperclip} Attached Files (${email.attachments.length})
-          </div>
-          <div class="attachments-grid">
-            ${email.attachments.map((att, idx) => {
-              const isPurged = att.purged || att.name === 'this file got purged on a data purge' || att.content === 'this file got purged on a data purge';
-              const nameText = isPurged ? 'this file got purged on a data purge' : escapeHtml(att.name);
-              const sizeText = isPurged ? 'Purged' : escapeHtml(att.size);
-
-              return `
-              <div class="attachment-card ${isPurged ? 'purged' : ''}" style="${isPurged ? 'border-color: rgba(255,30,60,0.5); background: rgba(255,30,60,0.08);' : ''}">
-                <span class="att-icon">${getFileIconSvg(att.type)}</span>
-                <div class="att-details">
-                  <div class="att-name" style="${isPurged ? 'color: #ff4d6d; font-weight: 700;' : ''}">${nameText}</div>
-                  <div class="att-size">${sizeText}</div>
-                </div>
-                <button class="att-download-btn" data-email-id="${email.id}" data-att-idx="${idx}">${window.XmorfIcons.download}</button>
-              </div>
-            `;
-            }).join('')}
-          </div>
-        </div>
-      `;
-    }
-
 function renderHtmlEmailInShadowDom(hostElement, htmlContent) {
   try {
     const shadow = hostElement.attachShadow({ mode: 'open' });
