@@ -511,6 +511,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+function decodeHtmlEntities(str) {
+  if (!str) return '';
+  let decoded = String(str);
+  if (/&lt;[a-z\/\!]/i.test(decoded) || /&gt;/i.test(decoded)) {
+    const txt = document.createElement('textarea');
+    txt.innerHTML = decoded;
+    decoded = txt.value;
+  }
+  return decoded;
+}
+
+function escapeAttr(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
   // Render Email Reader Pane
   function renderEmailReader() {
     const selectedId = window.xmorfStore.selectedEmailId;
@@ -559,12 +575,28 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }
 
-    const rawBody = email.bodyHtml || email.body || '';
-    const isHtmlEmail = /<[a-z][\s\S]*>/i.test(rawBody);
+    let cleanBody = decodeHtmlEntities(email.bodyHtml || email.body || '');
+    const isHtmlEmail = /<[a-z\/\!][\s\S]*>/i.test(cleanBody);
 
-    const emailBodyContent = isHtmlEmail
-      ? `<div class="html-email-container" style="margin-top: 16px; padding: 20px; background: #ffffff; color: #111111; border-radius: 8px; overflow-x: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">${rawBody}</div>`
-      : `<div class="reader-body" style="margin-top: 16px; white-space: pre-wrap; font-family: inherit; line-height: 1.6;">${escapeHtml(rawBody)}</div>`;
+    let emailBodyContent = '';
+    if (isHtmlEmail) {
+      let iframeHtml = cleanBody;
+      if (!/<head/i.test(iframeHtml)) {
+        iframeHtml = `<meta charset="utf-8"><base target="_blank"><style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#111;margin:0;padding:16px;line-height:1.6;}a{color:#2563eb;}img{max-width:100%;height:auto;}</style>${cleanBody}`;
+      } else {
+        iframeHtml = iframeHtml.replace(/<head>/i, '<head><base target="_blank">');
+      }
+
+      emailBodyContent = `
+        <div class="html-email-wrapper" style="margin-top: 16px; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #ffffff;">
+          <iframe class="html-email-iframe" sandbox="allow-popups allow-same-origin allow-scripts" srcdoc="${escapeAttr(iframeHtml)}" style="width: 100%; min-height: 450px; border: none; background: #ffffff; display: block;" onload="try { this.style.height = Math.max(350, (this.contentWindow.document.body.scrollHeight + 30)) + 'px'; } catch(e){}"></iframe>
+        </div>
+      `;
+    } else {
+      emailBodyContent = `
+        <div class="reader-body" style="margin-top: 16px; white-space: pre-wrap; font-family: inherit; line-height: 1.6;">${escapeHtml(cleanBody)}</div>
+      `;
+    }
 
     emailReaderPane.innerHTML = `
       <button id="btnMobileBack" class="mobile-back-btn">
