@@ -550,7 +550,7 @@
         <p>Please enter your 16-digit Admin Master Key to unlock the Xmorf Overseer Control Panel.</p>
         
         <div style="margin-top: 18px;">
-          <input type="text" id="adminKeyInput" class="input-field" placeholder="7449744917449274493" style="text-align: center; font-family: monospace; letter-spacing: 2px; font-size: 1.15rem;" required autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault(); window.performAdminLogin();}">
+          <input type="password" id="adminKeyInput" class="input-field" placeholder="••••••••••••••••" style="text-align: center; font-family: monospace; letter-spacing: 3px; font-size: 1.15rem;" required autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault(); window.performAdminLogin();}">
         </div>
         <div id="adminKeyError" style="color: #ff3355; background: rgba(255, 30, 60, 0.12); border: 1px solid rgba(255, 30, 60, 0.3); padding: 10px 14px; border-radius: 10px; font-size: 0.9rem; font-weight: 700; margin-top: 12px; display: none; text-align: center;"></div>
         <button type="button" id="adminUnlockBtn" onclick="window.performAdminLogin()" class="btn-primary" style="margin-top: 14px; width: 100%;">Unlock Overseer Panel</button>
