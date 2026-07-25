@@ -171,8 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!isAdminUnlocked) {
         adminAuthOverlay.classList.remove('hidden');
         adminContent.classList.add('hidden');
-        const keyInput = document.getElementById('adminKeyInput');
-        if (keyInput) keyInput.value = '';
       } else {
         adminAuthOverlay.classList.add('hidden');
         adminContent.classList.remove('hidden');
@@ -199,25 +197,48 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('popstate', handleRouting);
   handleRouting();
 
-  // Admin Master Key Form Submission
-  const adminAuthForm = document.getElementById('adminAuthForm');
-  if (adminAuthForm) {
-    adminAuthForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const keyInput = document.getElementById('adminKeyInput');
-      const key = keyInput ? keyInput.value : '';
+  // Global Admin Master Key Login Function
+  window.performAdminLogin = async function() {
+    const keyInput = document.getElementById('adminKeyInput');
+    const errorDiv = document.getElementById('adminKeyError');
+    const key = keyInput ? keyInput.value.trim() : '';
 
-      const res = await window.xmorfStore.adminLoginApi(key);
-      if (res && res.success) {
-        isAdminUnlocked = true;
-        if (keyInput) keyInput.value = '';
-        showToast('Admin Master Key Verified! Overseer Unlocked.');
-        handleRouting();
-      } else {
-        showToast((res && res.message) || 'Invalid Admin Master Key!', 'error');
+    if (errorDiv) {
+      errorDiv.style.display = 'none';
+      errorDiv.textContent = '';
+    }
+
+    if (!key) {
+      const emptyMsg = 'Bitte Admin Master Key (7449744917449274493) eingeben!';
+      if (errorDiv) {
+        errorDiv.textContent = '❌ ' + emptyMsg;
+        errorDiv.style.display = 'block';
       }
-    });
-  }
+      showToast(emptyMsg, 'error');
+      return;
+    }
+
+    const res = await window.xmorfStore.adminLoginApi(key);
+    if (res && res.success) {
+      isAdminUnlocked = true;
+      if (keyInput) keyInput.value = '';
+      if (errorDiv) errorDiv.style.display = 'none';
+      showToast('Admin Master Key Verified! Overseer Unlocked.');
+      
+      const overlay = document.getElementById('adminAuthOverlay');
+      const content = document.getElementById('adminContent');
+      if (overlay) overlay.classList.add('hidden');
+      if (content) content.classList.remove('hidden');
+      renderAdminDashboard();
+    } else {
+      const errMsg = (res && res.message) || 'Falscher Admin-Schlüssel! Zugriff verweigert.';
+      if (errorDiv) {
+        errorDiv.textContent = '❌ ' + errMsg;
+        errorDiv.style.display = 'block';
+      }
+      showToast(errMsg, 'error');
+    }
+  };
 
   // Mobile Drawer Toggle & View Switching
   const btnMobileMenu = document.getElementById('btnMobileMenu');
